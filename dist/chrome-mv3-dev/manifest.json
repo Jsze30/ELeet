@@ -1,0 +1,90 @@
+{
+  "manifest_version": 3,
+  "name": "TrackJobs",
+  "description": "Track and manage your job applications with ease",
+  "version": "1.2.2",
+  "icons": {
+    "48": "/icons/trackjobs_logo_48.png",
+    "128": "/icons/trackjobs_logo_128.png",
+    "256": "/icons/trackjobs_logo_256.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "cookies",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://leetcode.com/problems/*",
+    "http://localhost/*"
+  ],
+  "action": {
+    "default_icon": {
+      "48": "/icons/trackjobs_logo_48.png",
+      "128": "/icons/trackjobs_logo_128.png",
+      "256": "/icons/trackjobs_logo_256.png"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "*.html",
+        "*.png",
+        "fonts/*.ttf",
+        "*.js",
+        "*.css"
+      ],
+      "matches": [
+        "https://*/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' http://localhost:3000; object-src 'self';",
+    "sandbox": "script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:3000; sandbox allow-scripts allow-forms allow-popups allow-modals; child-src 'self';"
+  },
+  "commands": {
+    "wxt:reload-extension": {
+      "description": "Reload the extension during development",
+      "suggested_key": {
+        "default": "Alt+R"
+      }
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}
