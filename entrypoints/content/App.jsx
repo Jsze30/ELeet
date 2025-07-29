@@ -5,6 +5,8 @@ import { TabsDemo } from "@/components/main/TabsDemo.jsx"
 import { TooltipDemo } from "@/components/main/TooltipDemo.jsx"
 import { Button } from "@/components/ui/button.jsx"
 import { ScrollArea } from "@/components/ui/scroll-area.jsx"
+import { Welcome } from "@/components/main/welcome.jsx"
+import { Session } from "@/components/main/session.jsx"
 
 
 export default function App() {
@@ -13,7 +15,6 @@ export default function App() {
     const toggleVisibility = () => {
         setIsVisible(!isVisible)
     }
-
     return (
         <div>
             <button
@@ -22,7 +23,7 @@ export default function App() {
             >
                 {isVisible ? '×' : '☰'}
             </button>
-            {isVisible && (
+            {isVisible &&(
                 <div className="fixed bottom-16 min-h-[400px] right-2 min-w-[400px] bg-background z-[9999451] rounded-lg flex justify-center items-center p-4 shadow-lg border">
                     {/* <ScrollArea className="w-full h-[350px] mx-auto items-center flex justify-center"> */}
                     <div className='grid grid-cols-1 gap-4 items-center w-full'>
@@ -31,7 +32,9 @@ export default function App() {
                         </Button>
                         <TooltipDemo /> */}
                         {/* <HoverCardDemo /> */}
-                        <TabsDemo />
+                        {/* <TabsDemo /> */}
+                        <Session />
+
                         {/* <ResizableDemo /> */}
                     </div>
                     {/* </ScrollArea> */}
