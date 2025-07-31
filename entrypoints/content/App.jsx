@@ -5,12 +5,12 @@ import { TabsDemo } from "@/components/main/TabsDemo.jsx"
 import { TooltipDemo } from "@/components/main/TooltipDemo.jsx"
 import { Button } from "@/components/ui/button.jsx"
 import { ScrollArea } from "@/components/ui/scroll-area.jsx"
-import { Welcome } from "@/components/main/welcome.jsx"
 import { Session } from "@/components/main/session.jsx"
 
+const parrotLogoUrlBack = chrome.runtime.getURL("icons/parrot_logo_back.png");
 
 export default function App() {
-    const [isVisible, setIsVisible] = useState(false)
+    const [isVisible, setIsVisible] = useState(true)
 
     const toggleVisibility = () => {
         setIsVisible(!isVisible)
@@ -19,12 +19,16 @@ export default function App() {
         <div>
             <button
                 onClick={toggleVisibility}
-                className="fixed bottom-2 right-2 w-12 h-12 bg-primary text-primary-foreground rounded-full z-[9999452] flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors"
+                className="fixed bottom-5 right-5 w-12 h-12 bg-primary text-primary-foreground rounded-full z-[9999452] flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors"
             >
-                {isVisible ? '×' : '☰'}
+                {isVisible ? '✕' : <img 
+                    src= {parrotLogoUrlBack}
+                    alt="Parrot Logo" 
+                    style={{ width: '70%', height: '70%', objectFit: 'contain' }} // Show Parrot logo when the panel is hidden
+                />}
             </button>
             {isVisible &&(
-                <div className="fixed bottom-16 min-h-[400px] right-2 min-w-[400px] bg-background z-[9999451] rounded-lg flex justify-center items-center p-4 shadow-lg border">
+                <div className="fixed bottom-20 min-h-[400px] right-5 min-w-[400px] bg-background  rounded-lg flex justify-center items-center p-4 shadow-lg border">
                     {/* <ScrollArea className="w-full h-[350px] mx-auto items-center flex justify-center"> */}
                     <div className='grid grid-cols-1 gap-4 items-center w-full'>
                         {/* <Button>

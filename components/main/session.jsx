@@ -3,15 +3,31 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Room, RoomEvent } from 'livekit-client';
 import { RoomAudioRenderer, RoomContext, StartAudio } from '@livekit/components-react';
-import { Welcome } from '@/components/main/welcome';
+import { Button } from '@/components/ui/button';
+import { Welcome } from '@/components/main/welcome_page';
+import { Interview } from '@/components/main/interview_page';
 
 
 export function Session() {
     const room = useMemo(() => new Room(), []);
     const [sessionStarted, setSessionStarted] = useState(false);
     const [participantToken, setParticipantToken] = useState(null);
+    const [currentStage, setCurrentStage] = useState('welcome'); 
+    const [timeLimit, setTimeLimit] = useState(1800);
 
     const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
+    
+    const goToStage = (stage, time) => {
+        setCurrentStage(stage);
+        if (stage === 'interview') {
+            setSessionStarted(true);
+            setTimeLimit(time);
+        }
+        else if (stage === 'welcome' || stage === 'summary') {
+            setSessionStarted(false);
+        }
+    };
+
     useEffect(() => {
         fetch(`http://127.0.0.1:5000/getToken`)
             .then(res => res.json())
@@ -49,13 +65,34 @@ export function Session() {
     };
   }, [room, sessionStarted, participantToken]);
 
+    const StageManager = () => {
+        switch (currentStage) {
+            case 'welcome':
+                return (
+                    <Welcome onStartInterview={(time) => goToStage('interview', time)}/>
+                );
+            case 'interview':
+                return (
+                    <Interview 
+                      timeLimit={timeLimit}
+                      onEndInterview={() => goToStage('summary')}
+                    />
+                );
+            case 'summary':
+                return (
+                    <div className="summary-container">
+                        <h2>Interview Summary</h2>
+                        <Button onClick={() => goToStage('welcome')}>Start New Interview</Button>
+                    </div>
+                );
+            default:
+                return <div>Unknown stage</div>;
+        }
+    };
 
     return (
         <RoomContext.Provider value={room}>
-            <Welcome 
-                startButtonText="Start Interview"
-                onStartCall={() => setSessionStarted(true)}
-            />
+            {StageManager()}
             <RoomAudioRenderer />
             <StartAudio />
         </RoomContext.Provider>
