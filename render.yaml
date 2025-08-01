@@ -15,7 +15,9 @@ services:
     rootDir: backend/agent
 
     name: agent-example
-    runtime: image
+    env: docker
+    dockerContext: ./backend/agent
+    dockerfilePath: ./backend/agent/Dockerfile
 
     # Free plan is not available for private services
     plan: starter
