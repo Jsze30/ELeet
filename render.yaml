@@ -6,5 +6,5 @@ services:
     envVars:
       - fromGroup: agent-example-env-group
     autoDeploy: true
+    dockerContext: ./backend/token_server
     dockerfilePath: ./backend/token_server/Dockerfile
-    buildContext: ./backend/token_server
