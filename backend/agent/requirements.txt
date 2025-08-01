@@ -7,10 +7,6 @@ livekit-plugins-silero
 livekit-plugins-turn-detector
 livekit-plugins-noise-cancellation
 
-# Flask for token server
-flask
-flask-cors
-
 # Environment management
 python-dotenv
 

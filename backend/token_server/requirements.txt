@@ -1,0 +1,10 @@
+# Core LiveKit dependencies
+livekit
+
+# Flask for token server
+flask
+flask-cors
+
+# Environment management
+python-dotenv
+
