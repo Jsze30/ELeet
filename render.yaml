@@ -1,40 +1,30 @@
+version: "1"
+
 services:
   - type: web
     name: token-server
     env: docker
     plan: free
+    rootDir: backend/token_server
+    dockerContext: ./backend/token_server
+    dockerfilePath: ./backend/token_server/Dockerfile
     envVars:
       - fromGroup: agent-example-env-group
     autoDeploy: true
-    dockerContext: ./backend/token_server
-    dockerfilePath: ./backend/token_server/Dockerfile
 
-  - type: pserv
-
-    # Change this to the path containing your Dockerfile
-    rootDir: backend/agent
-
+  - type: worker
     name: agent-example
     env: docker
+    plan: starter
+    rootDir: backend/agent
     dockerContext: ./backend/agent
     dockerfilePath: ./backend/agent/Dockerfile
-
-    # Free plan is not available for private services
-    plan: starter
-
-    # Environment variables are stored in a group
-    # created in the Render dashboard.
     envVars:
       - fromGroup: agent-example-env-group
     region: virginia
-
-    # 300s is the standard allowed maximum. Talk to render.com support if you need this increased.
     maxShutdownDelaySeconds: 300
-
-    # Sane defaults
     scaling:
       minInstances: 1
       maxInstances: 4
       targetCPUPercent: 60
       targetMemoryPercent: 60
-version: "1"
