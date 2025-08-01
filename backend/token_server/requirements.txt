@@ -1,5 +1,6 @@
 # Core LiveKit dependencies
 livekit
+livekit-api
 
 # Flask for token server
 flask
