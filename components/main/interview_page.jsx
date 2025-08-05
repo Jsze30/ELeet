@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export const Interview = ({
   onEndInterview,
+  onGoBack,
   timeLimit = 60,
 }) => {
   const [timeRemaining, setTimeRemaining] = useState(timeLimit)
@@ -30,10 +31,10 @@ export const Interview = ({
   }
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      <div className="text-8xl font-bold text-gray-900 dark:text-gray-50">
+      <div className="absolute top-5 right-5 text-2xl font-bold text-gray-900 dark:text-gray-50">
         {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, "0")}
       </div>
-      <div className="flex gap-4">
+      {/* <div className="flex gap-4">
         {isRunning ? <Button onClick={handlePause} disabled={!isRunning}>
           Pause
         </Button> : <Button onClick={handleResume} disabled={isRunning}>
@@ -41,8 +42,11 @@ export const Interview = ({
         </Button>} 
         
         <Button onClick={handleReset}>Reset</Button>
-      </div>
-       <Button onClick={onEndInterview}>
+      </div> */}
+      <Button onClick={onGoBack} className="absolute bottom-10 left-10">
+          Go Back
+        </Button>
+       <Button onClick={onEndInterview} className="absolute bottom-10 right-10">
           End Interview
         </Button>
     </div>

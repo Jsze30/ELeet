@@ -1,6 +1,17 @@
 version: "1"
 
 services:
+  - type: web
+    name: token-server
+    env: docker
+    plan: free
+    rootDir: backend/token_server
+    dockerContext: ./backend/token_server
+    dockerfilePath: ./backend/token_server/Dockerfile
+    envVars:
+      - fromGroup: agent-example-env-group
+    autoDeploy: true
+
   - type: worker
     name: agent-example
     env: docker
