@@ -1,6 +1,6 @@
-difficulty = "Mildly difficult"
-def build_agent_instruction(problem_text: str, difficulty: str) -> str:
-    return AGENT_INSTRUCTION.format(problem=problem_text, difficulty=difficulty)
+# difficulty = "Mildly difficult"
+# def build_agent_instruction(problem_text: str, difficulty: str) -> str:
+#     return AGENT_INSTRUCTION.format(problem=problem_text, difficulty=difficulty)
 
 # AGENT_INSTRUCTION = """
 # You are a professional software‐engineer interviewer with 20 years of experience and you will make this interview.

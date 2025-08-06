@@ -21,11 +21,33 @@ export function Session() {
     const description = document.querySelector('.elfjS')?.textContent;
     const fullProblem = `Title: ${title}, Description: ${description}`;
 
+    // Update fullProblem when URL changes (switching to a new problem)
+    let lastUrl = location.href;
+    const observer = new MutationObserver(() => {
+      const currentUrl = location.href;
+      if (currentUrl !== lastUrl) {
+        lastUrl = currentUrl;
+        console.log("URL changed → fetching new problem");
+
+        // Give the DOM a moment to load after navigation
+        setTimeout(() => {
+          const title = document.querySelector('.text-title-large')?.textContent;
+          const description = document.querySelector('.elfjS')?.textContent;
+          const fullProblem = `Title: ${title}, Description: ${description}`;
+          console.log(fullProblem);
+        }, 500);
+      }
+    });
+
+    observer.observe(document, { subtree: true, childList: true });
+
+
     const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
 
-    const goToStage = (stage, time, difficulty) => {
+    const goToStage = async (stage, time, difficulty) => {
         setCurrentStage(stage);
         if (stage === 'interview') {
+            fetchParticipantToken();
             setSessionStarted(true);
             setTimeLimit(time);
             setDifficulty(difficulty);
@@ -35,19 +57,19 @@ export function Session() {
         }
     };
 
+      const fetchParticipantToken = async () => {
+        try {
+            const res = await fetch(`http://127.0.0.1:5000/getToken`);
+            const data = await res.json();
+            console.log("Token received:", data.token);
+            setParticipantToken(data.token);
+            return data.token;
+        } catch (error) {
+            console.error("Error fetching token:", error);
+            return null;
+        } 
+    };
 
-    useEffect(() => {
-        fetch(`http://127.0.0.1:5000/getToken`)
-            .then(res => res.json())
-            .then(data => {
-                console.log("Token received:", data.token);
-                setParticipantToken(data.token);
-            })
-            .catch(error => {
-                console.error("Error fetching token:", error);
-            });
-            console.log("Full Problem:", fullProblem);
-    }, []);
 
     useEffect(() => {
       let aborted = false;
