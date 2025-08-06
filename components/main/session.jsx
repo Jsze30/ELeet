@@ -15,18 +15,20 @@ export function Session() {
     const [participantToken, setParticipantToken] = useState(null);
     const [currentStage, setCurrentStage] = useState('welcome'); 
     const [timeLimit, setTimeLimit] = useState(1800);
+    const [difficulty, setDifficulty] = useState('medium');
 
     const title = document.querySelector('.text-title-large')?.textContent;
     const description = document.querySelector('.elfjS')?.textContent;
     const fullProblem = `Title: ${title}, Description: ${description}`;
 
     const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
-    
-    const goToStage = (stage, time) => {
+
+    const goToStage = (stage, time, difficulty) => {
         setCurrentStage(stage);
         if (stage === 'interview') {
             setSessionStarted(true);
             setTimeLimit(time);
+            setDifficulty(difficulty);
         }
         else if (stage === 'welcome' || stage === 'summary') {
             setSessionStarted(false);
@@ -60,7 +62,32 @@ export function Session() {
           }).catch(e => {
             console.error("Failed to send text", e);
           });
+        
+          room.localParticipant.sendText(difficulty, {
+            topic: 'difficulty',
+          }).then(info => {
+            console.log(`Sent difficulty with stream ID: ${info.id}`);
+          }).catch(e => {
+            console.error("Failed to send difficulty", e);
+          });
         };
+        room.registerTextStreamHandler("request_code", async (reader, participant) => {
+          const text = await reader.readAll();
+          console.log("📥 Received code request:", text);
+
+          // scrape user code from DOM
+          const userCode = Array.from(document.querySelectorAll('.view-line'))
+            .map(line => line.textContent)
+            .join('\n');
+
+          // send it back
+          await room.localParticipant.sendText(userCode, {
+            topic: 'user_code',
+          });
+
+          console.log("✅ Sent user code back to agent");
+        });
+
 
         room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
 
@@ -91,7 +118,7 @@ export function Session() {
         switch (currentStage) {
             case 'welcome':
                 return (
-                    <Welcome onStartInterview={(time) => goToStage('interview', time)}/>
+                    <Welcome onStartInterview={(time, difficulty) => goToStage('interview', time, difficulty)}/>
                 );
             case 'interview':
                 return (
