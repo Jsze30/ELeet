@@ -10,7 +10,7 @@ import { Summary } from '@/components/main/summary_page';
 
 
 export function Session() {
-    const room = useMemo(() => new Room(), []);
+    const [room, setRoom] = useState(null);
     const [sessionStarted, setSessionStarted] = useState(false);
     const [participantToken, setParticipantToken] = useState(null);
     const [currentStage, setCurrentStage] = useState('welcome'); 
@@ -21,13 +21,13 @@ export function Session() {
     const description = document.querySelector('.elfjS')?.textContent;
     const fullProblem = `Title: ${title}, Description: ${description}`;
 
-    // Update fullProblem when URL changes (switching to a new problem)
-    let lastUrl = location.href;
+    // Update fullProblem when title changes (switching to a new problem)
+    let lastTitle = document.querySelector('.text-title-large').textContent;
     const observer = new MutationObserver(() => {
-      const currentUrl = location.href;
-      if (currentUrl !== lastUrl) {
-        lastUrl = currentUrl;
-        console.log("URL changed → fetching new problem");
+      const currentTitle = document.querySelector('.text-title-large').textContent;
+      if (currentTitle !== lastTitle) {
+        lastTitle = currentTitle;
+        console.log("Title changed → fetching new problem");
 
         // Give the DOM a moment to load after navigation
         setTimeout(() => {
@@ -35,6 +35,7 @@ export function Session() {
           const description = document.querySelector('.elfjS')?.textContent;
           const fullProblem = `Title: ${title}, Description: ${description}`;
           console.log(fullProblem);
+          goToStage('welcome'); // Reset to welcome stage on new problem
         }, 500);
       }
     });
@@ -47,10 +48,13 @@ export function Session() {
     const goToStage = async (stage, time, difficulty) => {
         setCurrentStage(stage);
         if (stage === 'interview') {
-            fetchParticipantToken();
-            setSessionStarted(true);
-            setTimeLimit(time);
-            setDifficulty(difficulty);
+            const token = await fetchParticipantToken();
+              if (token) {
+                setRoom(new Room());
+                setSessionStarted(true);
+                setTimeLimit(time);
+                setDifficulty(difficulty);
+              }
         }
         else if (stage === 'welcome' || stage === 'summary') {
             setSessionStarted(false);
@@ -72,6 +76,7 @@ export function Session() {
 
 
     useEffect(() => {
+      if (!room || !participantToken || !sessionStarted) return;
       let aborted = false;
       if (sessionStarted && room.state === 'disconnected' && participantToken) {
         const onParticipantConnected = (participant) => {
@@ -93,22 +98,22 @@ export function Session() {
             console.error("Failed to send difficulty", e);
           });
         };
-        room.registerTextStreamHandler("request_code", async (reader, participant) => {
-          const text = await reader.readAll();
-          console.log("📥 Received code request:", text);
+        // room.registerTextStreamHandler("request_code", async (reader, participant) => {
+        //   const text = await reader.readAll();
+        //   console.log("📥 Received code request:", text);
 
-          // scrape user code from DOM
-          const userCode = Array.from(document.querySelectorAll('.view-line'))
-            .map(line => line.textContent)
-            .join('\n');
+        //   // scrape user code from DOM
+        //   const userCode = Array.from(document.querySelectorAll('.view-line'))
+        //     .map(line => line.textContent)
+        //     .join('\n');
 
-          // send it back
-          await room.localParticipant.sendText(userCode, {
-            topic: 'user_code',
-          });
+        //   // send it back
+        //   await room.localParticipant.sendText(userCode, {
+        //     topic: 'user_code',
+        //   });
 
-          console.log("✅ Sent user code back to agent");
-        });
+        //   console.log("✅ Sent user code back to agent");
+        // });
 
 
         room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
@@ -131,7 +136,9 @@ export function Session() {
       }
       return () => {
         aborted = true;
-        room.disconnect();
+        if (room.state !== 'disconnected') {
+          room.disconnect();
+        }
         room.removeAllListeners(RoomEvent.ParticipantConnected);
       };
     }, [room, sessionStarted, participantToken, fullProblem]);
@@ -160,10 +167,14 @@ export function Session() {
     };
 
     return (
-        <RoomContext.Provider value={room}>
-            {StageManager()}
-            <RoomAudioRenderer />
-            <StartAudio />
-        </RoomContext.Provider>
+         <>
+          {room ? (
+            <RoomContext.Provider value={room}>
+              <RoomAudioRenderer />
+              <StartAudio />
+            </RoomContext.Provider>
+          ) : null}
+          {StageManager()}
+        </>
     )
 }
