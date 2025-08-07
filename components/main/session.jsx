@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Room, RoomEvent } from 'livekit-client';
 import { RoomAudioRenderer, RoomContext, StartAudio } from '@livekit/components-react';
-import { Button } from '@/components/ui/button';
 import { Welcome } from '@/components/main/welcome_page';
 import { Interview } from '@/components/main/interview_page';
 import { Summary } from '@/components/main/summary_page';
@@ -16,6 +15,8 @@ export function Session() {
     const [currentStage, setCurrentStage] = useState('welcome'); 
     const [timeLimit, setTimeLimit] = useState(1800);
     const [difficulty, setDifficulty] = useState('medium');
+    const [feedback, setFeedback] = useState('');
+    const [loadingFeedback, setLoadingFeedback] = useState(false);
 
     const title = document.querySelector('.text-title-large')?.textContent;
     const description = document.querySelector('.elfjS')?.textContent;
@@ -47,7 +48,10 @@ export function Session() {
 
     const goToStage = async (stage, time, difficulty) => {
         setCurrentStage(stage);
-        if (stage === 'interview') {
+        if (stage === 'welcome') {
+            setSessionStarted(false);
+        }
+        else if (stage === 'interview') {
             const token = await fetchParticipantToken();
               if (token) {
                 setRoom(new Room());
@@ -56,8 +60,7 @@ export function Session() {
                 setDifficulty(difficulty);
               }
         }
-        else if (stage === 'welcome' || stage === 'summary') {
-            setSessionStarted(false);
+        else if (stage === 'summary') {
         }
     };
 
@@ -72,6 +75,30 @@ export function Session() {
             console.error("Error fetching token:", error);
             return null;
         } 
+    };
+
+
+    const endInterview = async () => {
+        setLoadingFeedback(true);
+        room.registerTextStreamHandler("interview_feedback", async (reader, participant) => {
+                const text = await reader.readAll();
+                console.log("📥 Received feedback:", text);
+                setFeedback(text);
+                setLoadingFeedback(false);
+                setSessionStarted(false);
+            });
+        try {
+            await room.localParticipant.sendText('{"action":"end_interview"}', {
+                topic: 'end_interview',
+            });
+            console.log("✅ Sent end interview signal");
+            goToStage('summary');
+        } catch (e) {
+            console.error("Error ending interview:", e);
+            setLoadingFeedback(false);
+            setSessionStarted(false);
+            goToStage('summary');
+        }
     };
 
 
@@ -98,22 +125,22 @@ export function Session() {
             console.error("Failed to send difficulty", e);
           });
         };
-        // room.registerTextStreamHandler("request_code", async (reader, participant) => {
-        //   const text = await reader.readAll();
-        //   console.log("📥 Received code request:", text);
+        room.registerTextStreamHandler("request_code", async (reader, participant) => {
+          const text = await reader.readAll();
+          console.log("📥 Received code request:", text);
 
-        //   // scrape user code from DOM
-        //   const userCode = Array.from(document.querySelectorAll('.view-line'))
-        //     .map(line => line.textContent)
-        //     .join('\n');
+          // scrape user code from DOM
+          const userCode = Array.from(document.querySelectorAll('.view-line'))
+            .map(line => line.textContent)
+            .join('\n');
 
-        //   // send it back
-        //   await room.localParticipant.sendText(userCode, {
-        //     topic: 'user_code',
-        //   });
+          // send it back
+          await room.localParticipant.sendText(userCode, {
+            topic: 'user_code',
+          });
 
-        //   console.log("✅ Sent user code back to agent");
-        // });
+          console.log("✅ Sent user code back to agent");
+        });
 
 
         room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
@@ -154,12 +181,16 @@ export function Session() {
                     <Interview 
                       timeLimit={timeLimit}
                       onGoBack={() => goToStage('welcome')}
-                      onEndInterview={() => goToStage('summary')}
+                      onEndInterview={() => endInterview()}
                     />
                 );
             case 'summary':
                 return (
-                    <Summary onStartOver={() => goToStage('welcome')} />
+                    <Summary 
+                      onStartOver={() => goToStage('welcome')} 
+                      feedback={feedback}
+                      isLoading={loadingFeedback}
+                    />
                 );
             default:
                 return <div>Unknown stage</div>;
@@ -170,8 +201,12 @@ export function Session() {
          <>
           {room ? (
             <RoomContext.Provider value={room}>
-              <RoomAudioRenderer />
-              <StartAudio />
+              {currentStage === 'interview' && (
+                <>
+                  <RoomAudioRenderer />
+                  <StartAudio />
+                </>
+              )}
             </RoomContext.Provider>
           ) : null}
           {StageManager()}

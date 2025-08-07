@@ -102,6 +102,158 @@
       "matches": [
         "https://leetcode.com/*"
       ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
+    },
+    {
+      "resources": [
+        "content-scripts/content.css"
+      ],
+      "matches": [
+        "https://leetcode.com/*"
+      ]
     }
   ],
   "content_security_policy": {

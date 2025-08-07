@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "id": "item_bf116ae2e1f9",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        "Welcome to this interview. Today, we will be discussing a problem called \"Two Sum\". \n\nThe problem"
+      ],
+      "interrupted": true
+    },
+    {
+      "id": "item_4150ebc70ace",
+      "type": "message",
+      "role": "user",
+      "content": [
+        "Hello?"
+      ],
+      "interrupted": false,
+      "transcript_confidence": 0.9038086
+    },
+    {
+      "id": "item_0f67ec4bd43d",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        "Hello! Thank you for joining the interview today. We'll be discussing the \"Two Sum\" problem. Are you ready to begin?"
+      ],
+      "interrupted": true
+    }
+  ]
+}

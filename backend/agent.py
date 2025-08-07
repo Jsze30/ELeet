@@ -11,6 +11,7 @@ from livekit.plugins import (
 )
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
+from feedback import analyze_transcript
 from livekit.agents import function_tool, RunContext
 
 load_dotenv()
@@ -51,9 +52,30 @@ class Assistant(Agent):
 
 
 async def entrypoint(ctx: agents.JobContext):
+    # async def process_transcript():
+    #     transcript_data = session.history.to_dict()
+    #     print(f"📊 Processing transcript for session {transcript_data}")
+    #     await analyze_transcript(transcript_data)
+    
+    # ctx.add_shutdown_callback(process_transcript)
+    
     ctx.room.register_text_stream_handler("problem", handle_text_stream)
     ctx.room.register_text_stream_handler("difficulty", handle_text_stream)
     ctx.room.register_text_stream_handler("user_code", handle_text_stream)
+
+    def handle_end_interview(reader, participant_identity):
+        task = asyncio.create_task(async_handle_end_interview(reader, participant_identity))
+        _active_tasks.add(task)
+        task.add_done_callback(lambda t: _active_tasks.remove(t))
+
+    async def async_handle_end_interview(reader, participant_identity):
+        transcript_data = session.history.to_dict()
+        print(f"📊 Processing transcript for session {transcript_data}")
+        feedback = await analyze_transcript(transcript_data)
+        await ctx.room.local_participant.send_text(feedback, topic="interview_feedback")
+
+    # ... inside entrypoint:
+    ctx.room.register_text_stream_handler("end_interview", handle_end_interview)
     
     # Define the tool function within entrypoint where you have access to the room
     @function_tool()
@@ -108,7 +130,6 @@ async def entrypoint(ctx: agents.JobContext):
     )
 
     
-
     await session.generate_reply(
         instructions=SESSION_INSTRUCTION,
     )
