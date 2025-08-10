@@ -17,6 +17,7 @@ export function Session() {
     const [difficulty, setDifficulty] = useState('medium');
     const [feedback, setFeedback] = useState('');
     const [loadingFeedback, setLoadingFeedback] = useState(false);
+    const [agentJoined, setAgentJoined] = useState(false);
 
     const title = document.querySelector('.text-title-large')?.textContent;
     const description = document.querySelector('.elfjS')?.textContent;
@@ -50,6 +51,7 @@ export function Session() {
         setCurrentStage(stage);
         if (stage === 'welcome') {
             setSessionStarted(false);
+            setAgentJoined(false)
         }
         else if (stage === 'interview') {
             const token = await fetchParticipantToken();
@@ -58,6 +60,7 @@ export function Session() {
                 setSessionStarted(true);
                 setTimeLimit(time);
                 setDifficulty(difficulty);
+                setAgentJoined(false)
               }
         }
         else if (stage === 'summary') {
@@ -108,6 +111,7 @@ export function Session() {
       if (sessionStarted && room.state === 'disconnected' && participantToken) {
         const onParticipantConnected = (participant) => {
           console.log(`Participant connected: ${participant.identity}, sending problem description.`);
+          setAgentJoined(true);
           // --- Send problem description once agent joins ---
           room.localParticipant.sendText(fullProblem, {
             topic: 'problem',
@@ -182,6 +186,7 @@ export function Session() {
                       timeLimit={timeLimit}
                       onGoBack={() => goToStage('welcome')}
                       onEndInterview={() => endInterview()}
+                      agentJoined={agentJoined}
                     />
                 );
             case 'summary':

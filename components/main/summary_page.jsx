@@ -1,11 +1,10 @@
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 
 export const Summary = ({ onStartOver, feedback, isLoading }) => {
   return (
-    <div className="flex flex-col items-center w-full h-full pt-14 px-2 pb-2">
-      <div className="w-full bg-muted rounded-lg shadow p-3 mb-2 flex-grow overflow-hidden flex flex-col max-h-[290px] max-w-[380px] mx-auto">
+    <div className="flex flex-col items-center w-full h-full pt-14 px-2 pb-20">
+      <div className="w-full bg-muted rounded-lg shadow p-3 mb-2 flex-grow overflow-hidden flex flex-col max-h-[220px] max-w-[350px] mx-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-2">
             <h2 className="font-medium text-base">Preparing Interview Feedback...</h2>
@@ -16,9 +15,9 @@ export const Summary = ({ onStartOver, feedback, isLoading }) => {
             </div>
           </div>
         ) : feedback ? (
-          <div className="h-full overflow-y-auto pr-1 px-2">
+          <div className="h-full overflow-y-auto pr-1 px-2 max-w-[350px]">
             <h2 className="font-medium text-base mb-2 sticky top-0 bg-muted">Interview Feedback</h2>
-            <div className="prose prose-xs max-w-[350px] text-sm">
+            <div className="prose prose-xs text-sm">
               <ReactMarkdown>
                 {feedback}
               </ReactMarkdown>
@@ -31,16 +30,12 @@ export const Summary = ({ onStartOver, feedback, isLoading }) => {
           </div>
         )}
       </div>
-      
-      <div className="mt-auto w-full flex justify-center">
-        <Button 
-          onClick={onStartOver} 
-          className="px-6 py-1 text-sm font-medium"
-          size="default"
-        >
-          Start New Interview
-        </Button>
-      </div>
+      <Button 
+        onClick={onStartOver} 
+        className="absolute bottom-10"
+      >
+        Start New Interview
+      </Button>
     </div>
   );
 };
