@@ -1,3 +1,9 @@
+/**
+ * Welcome component
+ * Features: lets user configure interview time limit (preset or custom minutes) 
+ *    and difficulty before starting.
+ * Calls onStartInterview(seconds, difficulty).
+ */
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,11 +18,16 @@ import {
 export const Welcome = ({
   onStartInterview,
 }) => {
+  // timeLimit stored in seconds (default 30 minutes = 1800)
   const [timeLimit, setTimeLimit] = useState(1800);
+  // difficulty level selection
   const [difficulty, setDifficulty] = useState("medium");
+  // toggles custom time input visibility
   const [showCustomInput, setShowCustomInput] = useState(false);
+  // custom time input value in minutes
   const [customTimeValue, setCustomTimeValue] = useState(30); 
   
+  // Update difficulty based on selection
   const handleDifficultyChange = (value) => {
     switch (value) {
       case "easy":
@@ -33,41 +44,42 @@ export const Welcome = ({
     }
   };
 
-  // Handle time limit selection
+  // Update time limit from preset or reveal custom input
   const handleTimeLimitChange = (value) => {
-    if (value === "custom") { // Show custom input field
+    if (value === "custom") {
       setShowCustomInput(true);
       setTimeLimit(customTimeValue * 60);
-    } else { // Default options
+    } else {
       setShowCustomInput(false);
-      
       switch (value) {
         case "short":
-          setTimeLimit(15 * 60); 
+          setTimeLimit(15 * 60);
           break;
         case "medium":
-          setTimeLimit(30 * 60); 
+          setTimeLimit(30 * 60);
           break;
         case "long":
-          setTimeLimit(45 * 60); 
+          setTimeLimit(45 * 60);
           break;
         default:
-          setTimeLimit(30 * 60); 
+          setTimeLimit(30 * 60);
       }
     }
   };
   
+  // Handle change in custom minutes input
   const handleCustomTimeChange = (e) => {
     const value = parseInt(e.target.value, 10);
     if (!isNaN(value) && value > 0) {
       setCustomTimeValue(value);
-      setTimeLimit(value * 60); // Convert minutes to seconds
+      setTimeLimit(value * 60);
     }
   };
 
   return (
     <div>
       <div className="flex flex-col items-center justify-center text-center space-y-4">
+        {/* Time limit selector (presets + custom) */}
         <Select onValueChange={handleTimeLimitChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Time Limit" />
@@ -80,6 +92,7 @@ export const Welcome = ({
           </SelectContent>
         </Select>
         
+        {/* Custom minutes input (shown only when 'Custom' selected) */}
         {showCustomInput && (
           <div className="flex items-center space-x-2">
             <Input
@@ -93,6 +106,7 @@ export const Welcome = ({
           </div>
         )}
 
+        {/* Difficulty selector */}
         <Select onValueChange={handleDifficultyChange}>
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Difficulty" />
@@ -104,6 +118,7 @@ export const Welcome = ({
           </SelectContent>
         </Select>
 
+        {/* Start button triggers parent with configured settings */}
         <Button onClick={() => onStartInterview(timeLimit, difficulty)} className="absolute bottom-10">
           Start Interview
         </Button>

@@ -19,27 +19,31 @@ load_dotenv()
 _active_tasks = set()
 problem_context = {"problem_info": None, "difficulty": None, "code": None}
 
+# Handles incoming text streams from the frontend
 async def async_handle_text_stream(reader, participant_identity):
-    info = reader.info  # metadata
-    print(f"📥 Received stream: topic={info.topic}")
+    info = reader.info
+    # print(f"📥 Received stream: topic={info.topic}")
 
+    # Handles problem description from DOM
     if info.topic == "problem":
         text = await reader.read_all()
-        print(f"Problem description received:\n{text}\n")
+        # print(f"Problem description received:\n{text}\n")
         problem_context["problem_info"] = text
         
+    # Handles difficulty set at welcome page
     elif info.topic == "difficulty":
         text = await reader.read_all()
-        print(f"Difficulty level received: {text}\n")
+        #   print(f"Difficulty level received: {text}\n")
         problem_context["difficulty"] = text
 
+    # Handles frontend requesting user code
     elif info.topic == "user_code":
         text = await reader.read_all()
-        print(f"User code received:\n{text}\n")
+        # print(f"User code received:\n{text}\n")
         problem_context["code"] = text
-    
-    
 
+
+# Handles incoming text streams from the frontend
 def handle_text_stream(reader, participant_identity):
     task = asyncio.create_task(async_handle_text_stream(reader, participant_identity))
     _active_tasks.add(task)
@@ -52,32 +56,27 @@ class Assistant(Agent):
 
 
 async def entrypoint(ctx: agents.JobContext):
-    # async def process_transcript():
-    #     transcript_data = session.history.to_dict()
-    #     print(f"📊 Processing transcript for session {transcript_data}")
-    #     await analyze_transcript(transcript_data)
-    
-    # ctx.add_shutdown_callback(process_transcript)
-    
+    # Register text stream handlers
     ctx.room.register_text_stream_handler("problem", handle_text_stream)
     ctx.room.register_text_stream_handler("difficulty", handle_text_stream)
     ctx.room.register_text_stream_handler("user_code", handle_text_stream)
 
+    # Handles end interview signal
     def handle_end_interview(reader, participant_identity):
         task = asyncio.create_task(async_handle_end_interview(reader, participant_identity))
         _active_tasks.add(task)
         task.add_done_callback(lambda t: _active_tasks.remove(t))
 
+    # Records transcript, sends it to feedback.py to process, and then sends feedback back to frontend
     async def async_handle_end_interview(reader, participant_identity):
         transcript_data = session.history.to_dict()
-        print(f"📊 Processing transcript for session {transcript_data}")
+        # print(f"📊 Processing transcript for session {transcript_data}")
         feedback = await analyze_transcript(transcript_data)
         await ctx.room.local_participant.send_text(feedback, topic="interview_feedback")
 
-    # ... inside entrypoint:
     ctx.room.register_text_stream_handler("end_interview", handle_end_interview)
     
-    # Define the tool function within entrypoint where you have access to the room
+    # Read code tool that agent has access to to read code from the DOM
     @function_tool()
     async def read_code_tool(context: RunContext) -> str:
         """
@@ -85,6 +84,7 @@ async def entrypoint(ctx: agents.JobContext):
         The frontend should listen for the 'request_code' topic,
         scrape the DOM, and send it back on 'user_code'.
         """
+        # Sends signal to frontend to request code
         await ctx.room.local_participant.send_text(
             '{"type":"request_code"}',
             topic="request_code"
@@ -109,7 +109,7 @@ async def entrypoint(ctx: agents.JobContext):
     )
     await ctx.connect()
 
-    print("⏳ Waiting for problem description...")
+    # print("⏳ Waiting for problem description...")
     while problem_context["problem_info"] is None:
         await asyncio.sleep(0.1)
         

@@ -1,6 +1,14 @@
+/**
+ * Session
+ * Orchestrates the full interview lifecycle:
+ *  - Extracts current coding problem from page DOM.
+ *  - Manages stage transitions (welcome -> interview -> summary).
+ *  - Connects to LiveKit room and exchanges text (problem, code, difficulty).
+ *  - Receives feedback after ending interview.
+ */
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Room, RoomEvent } from 'livekit-client';
 import { RoomAudioRenderer, RoomContext, StartAudio } from '@livekit/components-react';
 import { Welcome } from '@/components/main/welcome_page';
@@ -9,69 +17,71 @@ import { Summary } from '@/components/main/summary_page';
 
 
 export function Session() {
+    // LiveKit room instance
     const [room, setRoom] = useState(null);
+    // Whether a session is active (interview in progress)
     const [sessionStarted, setSessionStarted] = useState(false);
+    // LiveKit participant token
     const [participantToken, setParticipantToken] = useState(null);
+    // UI stage: 'welcome' | 'interview' | 'summary'
     const [currentStage, setCurrentStage] = useState('welcome'); 
+    // Interview settings
     const [timeLimit, setTimeLimit] = useState(1800);
     const [difficulty, setDifficulty] = useState('medium');
+    // AI feedback + loading state
     const [feedback, setFeedback] = useState('');
     const [loadingFeedback, setLoadingFeedback] = useState(false);
+    // Whether remote agent (AI participant) has connected
     const [agentJoined, setAgentJoined] = useState(false);
 
+    // Grab current problem title + description from host page (LeetCode-like DOM)
     const title = document.querySelector('.text-title-large')?.textContent;
     const description = document.querySelector('.elfjS')?.textContent;
     const fullProblem = `Title: ${title}, Description: ${description}`;
 
-    // Update fullProblem when title changes (switching to a new problem)
+    // Watch for problem changes (observing when title changes) → reset to welcome
     let lastTitle = document.querySelector('.text-title-large').textContent;
     const observer = new MutationObserver(() => {
       const currentTitle = document.querySelector('.text-title-large').textContent;
       if (currentTitle !== lastTitle) {
         lastTitle = currentTitle;
-        console.log("Title changed → fetching new problem");
-
-        // Give the DOM a moment to load after navigation
+        // Delay to allow page to finish rendering
         setTimeout(() => {
           const title = document.querySelector('.text-title-large')?.textContent;
           const description = document.querySelector('.elfjS')?.textContent;
           const fullProblem = `Title: ${title}, Description: ${description}`;
-          console.log(fullProblem);
-          goToStage('welcome'); // Reset to welcome stage on new problem
+          // Reset flow for new problem
+          goToStage('welcome');
         }, 500);
       }
     });
-
     observer.observe(document, { subtree: true, childList: true });
-
 
     const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
 
+    // Stage transition handler
     const goToStage = async (stage, time, difficulty) => {
         setCurrentStage(stage);
         if (stage === 'welcome') {
             setSessionStarted(false);
-            setAgentJoined(false)
-        }
-        else if (stage === 'interview') {
+            setAgentJoined(false);
+        } else if (stage === 'interview') {
             const token = await fetchParticipantToken();
-              if (token) {
+            if (token) {
                 setRoom(new Room());
                 setSessionStarted(true);
                 setTimeLimit(time);
                 setDifficulty(difficulty);
-                setAgentJoined(false)
-              }
-        }
-        else if (stage === 'summary') {
+                setAgentJoined(false);
+            }
         }
     };
 
-      const fetchParticipantToken = async () => {
+    // Retrieve LiveKit participant token from backend.
+    const fetchParticipantToken = async () => {
         try {
             const res = await fetch(`http://127.0.0.1:5000/getToken`);
             const data = await res.json();
-            console.log("Token received:", data.token);
             setParticipantToken(data.token);
             return data.token;
         } catch (error) {
@@ -80,21 +90,22 @@ export function Session() {
         } 
     };
 
-
+    /**
+     * End interview:
+     *  - Register feedback text stream handler (listens for agent's feedback blob).
+     *  - Send end_interview signal.
+     *  - Switch to summary stage.
+     */
     const endInterview = async () => {
         setLoadingFeedback(true);
         room.registerTextStreamHandler("interview_feedback", async (reader, participant) => {
-                const text = await reader.readAll();
-                console.log("📥 Received feedback:", text);
-                setFeedback(text);
-                setLoadingFeedback(false);
-                setSessionStarted(false);
-            });
+            const text = await reader.readAll();
+            setFeedback(text);
+            setLoadingFeedback(false);
+            setSessionStarted(false);
+        });
         try {
-            await room.localParticipant.sendText('{"action":"end_interview"}', {
-                topic: 'end_interview',
-            });
-            console.log("✅ Sent end interview signal");
+            await room.localParticipant.sendText('{"action":"end_interview"}', { topic: 'end_interview' });
             goToStage('summary');
         } catch (e) {
             console.error("Error ending interview:", e);
@@ -104,76 +115,52 @@ export function Session() {
         }
     };
 
-
     useEffect(() => {
+      // Connect to room & set up text handlers when starting interview
       if (!room || !participantToken || !sessionStarted) return;
       let aborted = false;
-      if (sessionStarted && room.state === 'disconnected' && participantToken) {
-        const onParticipantConnected = (participant) => {
-          console.log(`Participant connected: ${participant.identity}, sending problem description.`);
-          setAgentJoined(true);
-          // --- Send problem description once agent joins ---
-          room.localParticipant.sendText(fullProblem, {
-            topic: 'problem',
-          }).then(info => {
-            console.log(`Sent text with stream ID: ${info.id}`);
-          }).catch(e => {
-            console.error("Failed to send text", e);
-          });
-        
-          room.localParticipant.sendText(difficulty, {
-            topic: 'difficulty',
-          }).then(info => {
-            console.log(`Sent difficulty with stream ID: ${info.id}`);
-          }).catch(e => {
-            console.error("Failed to send difficulty", e);
-          });
-        };
-        room.registerTextStreamHandler("request_code", async (reader, participant) => {
-          const text = await reader.readAll();
-          console.log("📥 Received code request:", text);
 
-          // scrape user code from DOM
+      if (sessionStarted && room.state === 'disconnected' && participantToken) {
+        // Fires when agent connects; send problem + difficulty to agent
+        const onParticipantConnected = (participant) => {
+          setAgentJoined(true);
+          room.localParticipant.sendText(fullProblem, { topic: 'problem' }).catch(console.error);
+          room.localParticipant.sendText(difficulty, { topic: 'difficulty' }).catch(console.error);
+        };
+
+        // Agent requests user code snapshot
+        room.registerTextStreamHandler("request_code", async (reader, participant) => {
+          await reader.readAll();
+          // Scrape code editor lines and join them
           const userCode = Array.from(document.querySelectorAll('.view-line'))
             .map(line => line.textContent)
             .join('\n');
-
-          // send it back
-          await room.localParticipant.sendText(userCode, {
-            topic: 'user_code',
-          });
-
-          console.log("✅ Sent user code back to agent");
+          // Send user code to agent
+          await room.localParticipant.sendText(userCode, { topic: 'user_code' });
         });
-
 
         room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
 
+        // Enable mic early, then connect
         Promise.all([
-          room.localParticipant.setMicrophoneEnabled(true, undefined, {
-            preConnectBuffer: true,
-          }),
+          room.localParticipant.setMicrophoneEnabled(true, undefined, { preConnectBuffer: true }),
           room.connect(serverUrl, participantToken),
-        ]).then(async () => {
-        if (aborted) return;
-
-        console.log("✅ Connected to LiveKit");
-
-      }).catch((error) => {
-        if (aborted) {
-          return;
-        }
+        ]).catch((error) => {
+          if (aborted) return;
         });
       }
+
       return () => {
+        // Cleanup on unmount / dependency change
         aborted = true;
         if (room.state !== 'disconnected') {
           room.disconnect();
         }
         room.removeAllListeners(RoomEvent.ParticipantConnected);
       };
-    }, [room, sessionStarted, participantToken, fullProblem]);
+    }, [room, sessionStarted, participantToken, fullProblem, difficulty]);
 
+    // Renders current stage component.
     const StageManager = () => {
         switch (currentStage) {
             case 'welcome':
@@ -204,6 +191,7 @@ export function Session() {
 
     return (
          <>
+          {/* Provide room context & audio only during interview */}
           {room ? (
             <RoomContext.Provider value={room}>
               {currentStage === 'interview' && (
