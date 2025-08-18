@@ -132,7 +132,7 @@ pip install -r requirements.txt
 ```
 
 ```
-python agent.py download_files
+python agent.py download-files
 ```
 
 Start token server (Terminal 1):
