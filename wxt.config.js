@@ -17,30 +17,28 @@ export default defineConfig({
     startUrls: ["https://leetcode.com/problems/two-sum/description/"],  
   },
   manifest: {
-    name: 'TrackJobs',
-    description: 'Track and manage your job applications with ease',
-    version: '1.2.2',
-    permissions: ['activeTab', 'storage', 'scripting', 'cookies'],
-    //These are personal configs... just for testing purpose adjust accordingly
+    name: 'Parrot',
+    description: 'Turn any LeetCode question into a mock technical interview',
+    version: '0.2.0',
     host_permissions: [
       'https://leetcode.com/problems/*'
     ],
     action: {
       default_icon: {
-        '48': '/icons/trackjobs_logo_48.png',
-        '128': '/icons/trackjobs_logo_128.png',
-        '256': '/icons/trackjobs_logo_256.png'
+        '48': '/icons/parrot_logo.png',
+        '128': '/icons/parrot_logo.png',
+        '256': '/icons/parrot_logo.png'
       }
     },
     icons: {
-      '48': '/icons/trackjobs_logo_48.png',
-      '128': '/icons/trackjobs_logo_128.png',
-      '256' : '/icons/trackjobs_logo_256.png'
+      '48': '/icons/parrot_logo.png',
+      '128': '/icons/parrot_logo.png',
+      '256' : '/icons/parrot_logo.png'
     },
     web_accessible_resources: [
       {
-        resources: ['*.html', '*.png', 'fonts/*.ttf', '*.js', '*.css'],
-        matches: ['https://*/*']
+        "matches": ["https://leetcode.com/*"],
+        "resources": ["icons/parrot_logo.png", "icons/parrot_logo_back.png"]
       }
     ],
     content_security_policy: {

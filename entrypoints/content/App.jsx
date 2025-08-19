@@ -26,7 +26,7 @@ export default function App() {
             
             {/* 400x400px white panel */}
             <div 
-                className={`fixed bottom-20 min-h-[400px] right-5 min-w-[400px] bg-background rounded-lg flex justify-center items-center p-4 shadow-lg border ${
+                className={`fixed bottom-20 min-h-[350px] right-5 min-w-[335px] bg-background rounded-lg flex justify-center items-center p-4 shadow-lg border ${
                     isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
                 }`}
             >

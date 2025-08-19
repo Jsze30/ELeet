@@ -49,21 +49,21 @@ async def analyze_transcript(transcript_data: Dict[Any, Any]):
             [Concise summary of overall performance — include a numeric score (e.g., 7/10) with justification.]
 
             ## Strengths
-            Highlight 1-3 specific strengths observed in the interview. Focus on clarity, reasoning, communication, and technical accuracy.
+            List a couple specific strengths observed in the interview. Focus on clarity, reasoning, communication, and technical accuracy.
 
             - [Specific strength #1 with a concrete example or reasoning]
             - [Specific strength #2]
             - ...
 
             ## Areas for Improvement
-            List 1-3 focused areas for improvement. Avoid vague or repetitive comments. Only include what's necessary for meaningful growth.
+            List a couple focused areas for improvement. Avoid vague or repetitive comments. Only include what's necessary for meaningful growth. Keep it straight and to the point.
 
             - [Targeted improvement #1 with rationale]
-            - [Targeted improvement #2]
+            - [Targeted improvement #2 with rationale]
             - ...
 
             ## Key Topics Covered
-            List the most important concepts, patterns, or areas discussed.
+            List the most Leetcode patterns used and type of problem solved, e.g., "Array, String, Dynamic Programming, Graphs, Trees".
 
             - [Topic 1]
             - [Topic 2]

@@ -18,6 +18,7 @@ load_dotenv()
 
 _active_tasks = set()
 problem_context = {"problem_info": None, "difficulty": None, "code": None}
+code_updated_event = asyncio.Event()
 
 # Handles incoming text streams from the frontend
 async def async_handle_text_stream(reader, participant_identity):
@@ -41,6 +42,8 @@ async def async_handle_text_stream(reader, participant_identity):
         text = await reader.read_all()
         # print(f"User code received:\n{text}\n")
         problem_context["code"] = text
+        # Set the event to notify that code has been updated
+        code_updated_event.set()
 
 
 # Handles incoming text streams from the frontend
@@ -84,12 +87,24 @@ async def entrypoint(ctx: agents.JobContext):
         The frontend should listen for the 'request_code' topic,
         scrape the DOM, and send it back on 'user_code'.
         """
+        # Reset event before requesting new code
+        code_updated_event.clear()
+        
         # Sends signal to frontend to request code
         await ctx.room.local_participant.send_text(
             '{"type":"request_code"}',
             topic="request_code"
         )
-        return "Requesting the latest code from the user..."
+        
+        # Wait for the code to be received (with timeout)
+        try:
+            await asyncio.wait_for(code_updated_event.wait(), timeout=5.0)
+            if problem_context["code"]:
+                return f"Here is the user's current code:\n```\n{problem_context['code']}\n```"
+            else:
+                return "No code was received from the user."
+        except asyncio.TimeoutError:
+            return "Timeout: Failed to receive code from the user within the expected time."
 
     openai_tts = tts.StreamAdapter(
         tts=openai.TTS(voice="alloy"),
