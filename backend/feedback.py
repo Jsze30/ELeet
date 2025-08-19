@@ -36,33 +36,44 @@ async def analyze_transcript(transcript_data: Dict[Any, Any]):
             client.chat.completions.create,
             model="gpt-4",  # Or your preferred model
             messages=[
-                {"role": "system", "content": """
-                Analyze this interview transcript and provide structured feedback in the following format:
-                
-                ## Overall Quality
-                [Brief assessment of the interview quality]
-                
-                ## Strengths
-                - [Strength 1]
-                - [Strength 2]
-                ...
-                
-                ## Areas for Improvement
-                - [Area 1]
-                - [Area 2]
-                ...
-                
-                ## Key Topics Covered
-                - [Topic 1]
-                - [Topic 2]
-                ...
-                
-                ## Suggested Follow-up Questions
-                - [Question 1]
-                - [Question 2]
-                ...
-                """},
-                {"role": "user", "content": f"Here's the interview transcript to analyze: {conversation}"}
+                {
+                    "role": "system",
+                    "content": """
+            You are an expert technical interviewer.
+
+            Analyze the following interview transcript and generate clear, structured feedback. The goal is to help the candidate improve in future interviews.
+
+            Use this exact format and criteria:
+
+            ## Overall Quality (Score out of 10)
+            [Concise summary of overall performance — include a numeric score (e.g., 7/10) with justification.]
+
+            ## Strengths
+            Highlight 1-3 specific strengths observed in the interview. Focus on clarity, reasoning, communication, and technical accuracy.
+
+            - [Specific strength #1 with a concrete example or reasoning]
+            - [Specific strength #2]
+            - ...
+
+            ## Areas for Improvement
+            List 1-3 focused areas for improvement. Avoid vague or repetitive comments. Only include what's necessary for meaningful growth.
+
+            - [Targeted improvement #1 with rationale]
+            - [Targeted improvement #2]
+            - ...
+
+            ## Key Topics Covered
+            List the most important concepts, patterns, or areas discussed.
+
+            - [Topic 1]
+            - [Topic 2]
+            - ...
+            """
+                },
+                {
+                    "role": "user",
+                    "content": f"Here's the interview transcript to analyze: {conversation}"
+                }
             ]
         )
         

@@ -1,0 +1,23 @@
+# Core LiveKit dependencies
+livekit
+livekit-agents
+livekit-plugins-openai
+livekit-plugins-deepgram
+livekit-plugins-silero
+livekit-plugins-turn-detector
+livekit-plugins-noise-cancellation
+
+# Environment management
+python-dotenv
+
+# Additional dependencies that may be required
+aiohttp
+websockets
+
+# Core LiveKit dependencies
+livekit
+livekit-api
+
+# Flask for token server
+flask
+flask-cors
