@@ -11,20 +11,3 @@ services:
     envVars:
       - fromGroup: agent-example-env-group
     autoDeploy: true
-
-  - type: worker
-    name: agent-example
-    env: docker
-    plan: starter
-    rootDir: backend/agent
-    dockerContext: ./backend/agent
-    dockerfilePath: ./backend/agent/Dockerfile
-    envVars:
-      - fromGroup: agent-example-env-group
-    region: virginia
-    maxShutdownDelaySeconds: 300
-    scaling:
-      minInstances: 1
-      maxInstances: 4
-      targetCPUPercent: 60
-      targetMemoryPercent: 60
