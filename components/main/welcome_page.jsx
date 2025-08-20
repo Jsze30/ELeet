@@ -82,13 +82,13 @@ export const Welcome = ({
         {/* Time limit selector (presets + custom) */}
         <Select onValueChange={handleTimeLimitChange}>
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Time Limit" />
+            <SelectValue placeholder="Time Limit"/>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="short">15 Minutes</SelectItem>
             <SelectItem value="medium">30 Minutes</SelectItem>
             <SelectItem value="long">45 Minutes</SelectItem>
-            <SelectItem value="custom">Custom</SelectItem>
+            {/* <SelectItem value="custom">Custom</SelectItem> */}
           </SelectContent>
         </Select>
         

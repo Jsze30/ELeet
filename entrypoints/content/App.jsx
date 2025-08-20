@@ -5,7 +5,7 @@ const ELeetLogoUrl = chrome.runtime.getURL("icons/ELeet_logo.png");
 const ELeetLogoUrlBack = chrome.runtime.getURL("icons/ELeet_logo_no_back.png");
 
 export default function App() {
-    const [isVisible, setIsVisible] = useState(false)
+    const [isVisible, setIsVisible] = useState(true)
 
     const toggleVisibility = () => {
         setIsVisible(!isVisible)

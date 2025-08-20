@@ -66,7 +66,7 @@ function SelectContent({
         className={cn(
           [
             'relative z-50 overflow-x-hidden overflow-y-auto rounded-md border drop-shadow-xl/5',
-            'bg-white dark:bg-slate-950', // Explicit solid background color
+            'bg-white text-black', // Explicit solid background color
             '!bg-opacity-100', // Force 100% opacity
             'backdrop-filter-none', // Remove any backdrop filters
             'max-h-(--radix-select-content-available-height) min-w-[8rem]',
