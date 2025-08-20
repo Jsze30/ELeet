@@ -83,7 +83,6 @@ export function Session() {
             const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
             const data = await res.json();
             setParticipantToken(data.token);
-            console.log("Participant token fetched:", data.token);
             return data.token;
         } catch (error) {
             console.error("Error fetching token:", error);
