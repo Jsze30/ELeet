@@ -1,50 +1,32 @@
 {
   "manifest_version": 3,
-  "name": "TrackJobs",
-  "description": "Track and manage your job applications with ease",
-  "version": "1.2.2",
+  "name": "Parrot",
+  "description": "Turn any LeetCode question into a mock technical interview",
+  "version": "0.2.0",
   "icons": {
-    "48": "/icons/trackjobs_logo_48.png",
-    "128": "/icons/trackjobs_logo_128.png",
-    "256": "/icons/trackjobs_logo_256.png"
+    "48": "/icons/parrot_logo.png",
+    "128": "/icons/parrot_logo.png",
+    "256": "/icons/parrot_logo.png"
   },
-  "permissions": [
-    "activeTab",
-    "storage",
-    "scripting",
-    "cookies",
-    "tabs"
-  ],
   "host_permissions": [
     "https://leetcode.com/problems/*",
     "http://localhost/*"
   ],
   "action": {
     "default_icon": {
-      "48": "/icons/trackjobs_logo_48.png",
-      "128": "/icons/trackjobs_logo_128.png",
-      "256": "/icons/trackjobs_logo_256.png"
+      "48": "/icons/parrot_logo.png",
+      "128": "/icons/parrot_logo.png",
+      "256": "/icons/parrot_logo.png"
     }
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "*.html",
-        "*.png",
-        "fonts/*.ttf",
-        "*.js",
-        "*.css"
-      ],
-      "matches": [
-        "https://*/*"
-      ]
-    },
-    {
-      "resources": [
-        "content-scripts/content.css"
-      ],
       "matches": [
         "https://leetcode.com/*"
+      ],
+      "resources": [
+        "icons/parrot_logo.png",
+        "icons/parrot_logo_back.png"
       ]
     },
     {
@@ -70,5 +52,9 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "permissions": [
+    "tabs",
+    "scripting"
+  ]
 }

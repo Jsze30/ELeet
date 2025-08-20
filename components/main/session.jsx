@@ -80,7 +80,7 @@ export function Session() {
     // Retrieve LiveKit participant token from backend.
     const fetchParticipantToken = async () => {
         try {
-            const res = await fetch(`http://127.0.0.1:5000/getToken`);
+            const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
             const data = await res.json();
             setParticipantToken(data.token);
             return data.token;
