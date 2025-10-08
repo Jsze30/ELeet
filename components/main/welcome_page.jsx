@@ -119,9 +119,18 @@ export const Welcome = ({
         </Select>
 
         {/* Start button triggers parent with configured settings */}
-        <Button onClick={() => onStartInterview(timeLimit, difficulty)} className="absolute bottom-10">
-          Start Interview
-        </Button>
+        <div className="absolute bottom-10 flex space-x-4">
+          {/* Start button triggers parent with configured settings */}
+          <Button onClick={() => onStartInterview(timeLimit, difficulty)}>
+            Start Interview
+          </Button>
+          {/* Discord link button */}
+          <Button variant="secondary" asChild className="bg-purple-500 hover:bg-purple-600 text-secondary-foreground">
+            <a href="https://discord.gg/gEnunRG3uF" target="_blank" rel="noopener noreferrer">
+              Join Our Discord!
+            </a>
+          </Button>
+        </div>
       </div>
     </div>
   );
