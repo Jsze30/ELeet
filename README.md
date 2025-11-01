@@ -1,4 +1,4 @@
-# Parrot WXT Extension
+# ELeet WXT Extension
 
 An interview practice assistant that enables mock interviews on LeetCode problems to be conducted with an AI agent. It:
 
@@ -119,7 +119,7 @@ Adjust fetch URL in `session.jsx` if different.
 
 ```
 git clone <repo-url>
-cd parrot_wxt
+cd ELeet
 ```
 
 ### 2. Backend Setup
