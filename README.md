@@ -124,32 +124,36 @@ cd ELeet
 
 ### 2. Backend Setup
 
+Start token server (Terminal 1):
+
 ```
-cd backend
+cd backend/token_server
 python -m venv venv
 source venv/bin/activate         # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ```
-python agent.py download-files
-```
-
-Start token server (Terminal 1):
-
-```
 python token_server.py
 ```
 
-Start agent (Terminal 2, still in venv):
+Start agent (Terminal 2)
 
 ```
-python agent.py dev
+cd backend/agent
+python -m venv venv
+source venv/bin/activate         # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python new_agent.py download-files
+```
+
+```
+python new_agent.py dev
 ```
 
 ### 3. Frontend / Extension Dev
 
-From project root:
+From project root (Terminal 3):
 
 ```
 npm install

@@ -6,11 +6,4 @@ livekit-plugins-deepgram
 livekit-plugins-silero
 livekit-plugins-turn-detector
 livekit-plugins-noise-cancellation
-
-# Environment management
 python-dotenv
-
-# Additional dependencies that may be required
-aiohttp
-websockets
-numpy

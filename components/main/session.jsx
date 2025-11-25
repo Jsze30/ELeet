@@ -57,7 +57,11 @@ export function Session() {
     });
     observer.observe(document, { subtree: true, childList: true });
 
-    const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
+    // const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
+
+    const serverUrl = __DEV__ 
+      ? "wss://eleet-dev-yrih4rxn.livekit.cloud"  // Your new dev project URL
+      : "wss://parrot-8ggzczwu.livekit.cloud";  // Production URL
 
     // Stage transition handler
     const goToStage = async (stage, time, difficulty) => {
@@ -80,7 +84,13 @@ export function Session() {
     // Retrieve LiveKit participant token from backend.
     const fetchParticipantToken = async () => {
         try {
-            const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
+            // const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
+            const tokenUrl = __DEV__ 
+              ? 'http://localhost:5000/getToken'  // Local token server
+              : 'https://parrot-wxt.onrender.com/getToken';  // Production token server
+
+            const res = await fetch(tokenUrl);
+            console.log('🎟️ FRONTEND: Fetching token from:', tokenUrl);
             const data = await res.json();
             setParticipantToken(data.token);
             return data.token;

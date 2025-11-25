@@ -1,6 +1,7 @@
 import { defineConfig } from 'wxt';
 import react from '@vitejs/plugin-react';
 
+// const clerkHost = `${import.meta.env.CLERK_FRONTEND_API}/*`;
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -11,6 +12,9 @@ export default defineConfig({
       alias: {
         '@': './*'
       }
+    },
+    define: {
+      __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
     }
   }),
   webExt: {
@@ -21,8 +25,9 @@ export default defineConfig({
     description: 'Turn any LeetCode question into a technical interview',
     version: '0.2.0',
     host_permissions: [
-      'https://leetcode.com/problems/*'
+      'https://leetcode.com/problems/*',
     ],
+    permissions: ['storage', 'cookies'],
     action: {
       default_icon: {
         '48': '/icons/ELeet_logo.png',

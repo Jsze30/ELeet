@@ -1,3 +1,4 @@
+import os
 from dotenv import load_dotenv
 import asyncio
 
@@ -15,6 +16,13 @@ from feedback import analyze_transcript
 from livekit.agents import function_tool, RunContext
 
 load_dotenv()
+os.environ['LIVEKIT_URL'] = 'wss://eleet-dev-yrih4rxn.livekit.cloud'
+print("=== ENVIRONMENT DEBUG ===")
+print(f"Current working directory: {os.getcwd()}")
+print(f"LIVEKIT_URL: {os.getenv('LIVEKIT_URL')}")
+print(f"LIVEKIT_API_KEY: {os.getenv('LIVEKIT_API_KEY')}")
+print(f"LIVEKIT_API_SECRET exists: {bool(os.getenv('LIVEKIT_API_SECRET'))}")
+print("========================")
 
 _active_tasks = set()
 problem_context = {"problem_info": None, "difficulty": None, "code": None}

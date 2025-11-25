@@ -1,8 +1,23 @@
 import { useState } from "react"
 import { Session } from "@/components/main/session.jsx"
+import { Button } from "@/components/ui/button";
+// import {
+//   ClerkProvider,
+//   SignInButton,
+//   SignedIn,
+//   SignedOut,
+//   UserButton,
+// } from '@clerk/chrome-extension'
 
 const ELeetLogoUrl = chrome.runtime.getURL("icons/ELeet_logo.png");
 const ELeetLogoUrlBack = chrome.runtime.getURL("icons/ELeet_logo_no_back.png");
+
+// const PUBLISHABLE_KEY = import.meta.env.WXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+// const SYNC_HOST = import.meta.env.WXT_PUBLIC_CLERK_SYNC_HOST;
+
+// if (!PUBLISHABLE_KEY || !SYNC_HOST) {
+//   throw new Error('Please add the WXT_PUBLIC_CLERK_PUBLISHABLE_KEY and WXT_PUBLIC_CLERK_SYNC_HOST to the .env file')
+// }
 
 export default function App() {
     const [isVisible, setIsVisible] = useState(true)
@@ -11,8 +26,9 @@ export default function App() {
         setIsVisible(!isVisible)
     }
     return (
+        // <ClerkProvider publishableKey={PUBLISHABLE_KEY} syncHost={SYNC_HOST}>
         <div>
-            {/* Parrot button that toggles the visibility of the session */}
+            {/* ELeet button that toggles the visibility of the session */}
             <button
                 onClick={toggleVisibility}
                 className="fixed bottom-5 right-5 w-12 h-12 bg-primary text-primary-foreground rounded-full z-[9999452] flex items-center justify-center shadow-lg hover:bg-primary/90 transition-colors"
@@ -41,11 +57,19 @@ export default function App() {
                     <h3 className="text-xl font-bold">ELeet</h3>
                 </div>
                 
+                {/* <div className="absolute top-5 right-5 flex items-center justify-start">
+                    <SignedOut>
+                        <SignInButton>
+                            Log In
+                        </SignInButton>
+                    </SignedOut>
+                </div> */}
                 {/* Renders session component */}
                 <div className='grid grid-cols-1 gap-4 items-center w-full'>
                     <Session />
                 </div>
             </div>
+        {/* </ClerkProvider> */}
         </div>
     )
 };
