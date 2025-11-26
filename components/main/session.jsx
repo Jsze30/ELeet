@@ -86,7 +86,7 @@ export function Session() {
         try {
             // const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
             const tokenUrl = __DEV__ 
-              ? 'http://localhost:5000/getToken'  // Local token server
+              ? 'http://localhost:8080/getToken'  // Local token server
               : 'https://parrot-wxt.onrender.com/getToken';  // Production token server
 
             const res = await fetch(tokenUrl);
