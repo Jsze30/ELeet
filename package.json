@@ -14,7 +14,7 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@clerk/chrome-extension": "^2.7.12",
+    "@clerk/chrome-extension": "^2.8.12",
     "@livekit/components-react": "^2.9.14",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-avatar": "^1.1.6",
