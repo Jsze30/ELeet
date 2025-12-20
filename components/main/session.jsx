@@ -35,7 +35,7 @@ export function Session() {
   // LiveKit participant token
   const [participantToken, setParticipantToken] = useState(null);
   // UI stage: 'welcome' | 'interview' | 'summary'
-  const [currentStage, setCurrentStage] = useState("interview");
+  const [currentStage, setCurrentStage] = useState("welcome");
   // Interview settings
   const [timeLimit, setTimeLimit] = useState(1800);
   const [difficulty, setDifficulty] = useState("medium");

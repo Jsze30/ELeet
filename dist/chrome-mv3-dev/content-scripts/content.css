@@ -1163,6 +1163,10 @@ body {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity, 1));
 }
+.text-\[hsl\(0\2c 0\%\2c 0\%\)\] {
+  --tw-text-opacity: 1;
+  color: hsl(0 0% 0% / var(--tw-text-opacity, 1));
+}
 .underline-offset-4 {
   text-underline-offset: 4px;
 }

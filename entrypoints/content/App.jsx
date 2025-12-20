@@ -26,24 +26,26 @@ async function getAuth() {
 }
 
 async function openSignIn() {
+  const redirectUrl = window.location.href;
+
   await chrome.runtime.sendMessage({
     type: "OPEN_TAB",
-    url: "https://accounts.eleetcoder.com/sign-in",
+    url: `https://accounts.eleetcoder.com/sign-in?redirect_url=${encodeURIComponent(
+      redirectUrl
+    )}`,
   });
 }
 
-// if (!res?.ok) {
-//   console.error("Auth error:", res?.error);
-// } else if (!res.userId) {
-//   // not signed in
-//   await openSignIn();
-// } else {
-//   console.log("Signed in user:", res.userId);
-//   console.log("Token:", res.token);
-// }
+async function openSignUp() {
+  await chrome.runtime.sendMessage({
+    type: "OPEN_TAB",
+    url: "https://accounts.eleetcoder.com/sign-up",
+  });
+}
 
 export default function App() {
   const [isVisible, setIsVisible] = useState(true);
+  const [authButtonPressed, setAuthButtonPressed] = useState(false);
   const [authRes, setAuthRes] = useState(null);
 
   const toggleVisibility = () => {
@@ -59,24 +61,9 @@ export default function App() {
     run();
   }, []);
 
+  const isAuthed = Boolean(authRes?.ok && authRes?.userId);
+
   return (
-    // <ClerkProvider
-    //     publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-    //     syncHost={import.meta.env.VITE_CLERK_SYNC_HOST}
-    //     afterSignOutUrl="/"
-    //     appearance={{
-    //         cssLayerName: 'clerk',
-    //         variables: {
-    //             fontFamily:
-    //             "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
-    //         },
-    //         elements: {
-    //             userButtonTrigger: "clerk-userbtn-trigger",
-    //             userButtonAvatarBox: "clerk-avatar-box",
-    //             userButtonAvatarImage: "clerk-avatar-img",
-    //         },
-    //     }}
-    // >
     <div>
       {/* ELeet button that toggles the visibility of the session */}
       <button
@@ -102,8 +89,7 @@ export default function App() {
             : "opacity-0 pointer-events-none"
         }`}
       >
-        {/* If signed out, then display just name logo, sign in and sign up button */}
-        {/* <SignedIn> */}
+        {/* Header (shared) */}
         <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
           <div className="flex items-center">
             <img
@@ -115,39 +101,63 @@ export default function App() {
           </div>
           {/* <UserButton/> */}
         </div>
-        <div className="grid grid-cols-1 gap-4 items-center w-full">
-          <Session />
-        </div>
-        {/* </SignedIn> */}
 
-        {/* <div className="absolute top-5 left-5 right-5 flex items-center justify-between">
-          <div className="flex items-center">
-            <img
-              src={ELeetLogoUrl}
-              alt="ELeet Logo"
-              className="h-8 mr-3 rounded"
-            />
-            <h3 className="text-xl font-bold">ELeet</h3>
+        {/* Signed out UI */}
+        {!isAuthed ? (
+          <>
+            {!authButtonPressed ? (
+              <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0_0%_95%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSignIn();
+                      setAuthButtonPressed(true);
+                    }}
+                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold border border-[hsl(270_85%_60%)] text-[hsl(270_85%_45%)] bg-[hsl(270_85%_95%)] transition hover:bg-[hsl(270_85%_60%)] hover:text-white active:translate-y-[1px]"
+                  >
+                    Log In
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      openSignUp();
+                      setAuthButtonPressed(true);
+                    }}
+                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
+                  >
+                    Sign Up
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0,0%,0%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
+                <div className="flex flex-col items-center gap-4">
+                  <p className="text-center">
+                    Please complete the authentication in the opened tab. Once done, return here.
+                  </p>
+                  <Button
+                    onClick={async () => {
+                      const res = await getAuth();
+                      setAuthRes(res);
+                      console.log("Auth response after button click:", res);
+                      setAuthButtonPressed(false);
+                    }}
+                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
+                  >
+                    I've Completed Authentication
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          // Signed in UI
+          <div className="grid grid-cols-1 gap-4 items-center w-full">
+            <Session />
           </div>
-        </div>
-
-        <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0_0%_95%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              className="rounded-[12px] px-5 py-3 text-[15px] font-semibold border border-[hsl(270_85%_60%)] text-[hsl(270_85%_45%)] bg-[hsl(270_85%_95%)] transition hover:bg-[hsl(270_85%_60%)] hover:text-white active:translate-y-[1px]"
-            >
-              Log In
-            </button>
-
-            <button
-              type="button"
-              className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
-            >
-              Sign Up
-            </button>
-          </div>
-        </div> */}
+        )}
       </div>
       {/* </ClerkProvider> */}
     </div>
