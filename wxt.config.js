@@ -2,7 +2,7 @@ import { defineConfig } from 'wxt';
 import react from '@vitejs/plugin-react';
 import fs from "fs";
 
-const clerkHost = `${import.meta.env.CLERK_FRONTEND_API}/*`;
+const clerkHost = `${import.meta.env.VITE_CLERK_FRONTEND_API}/*`;
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
