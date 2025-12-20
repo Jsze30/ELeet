@@ -14,13 +14,6 @@ import {
 const ELeetLogoUrl = chrome.runtime.getURL("icons/ELeet_logo.png");
 const ELeetLogoUrlBack = chrome.runtime.getURL("icons/ELeet_logo_no_back.png");
 
-// const PUBLISHABLE_KEY = import.meta.env.WXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
-// const SYNC_HOST = import.meta.env.WXT_PUBLIC_CLERK_SYNC_HOST;
-
-// if (!PUBLISHABLE_KEY || !SYNC_HOST) {
-//   throw new Error('Please add the WXT_PUBLIC_CLERK_PUBLISHABLE_KEY and WXT_PUBLIC_CLERK_SYNC_HOST to the .env file')
-// }
-
 async function getAuth() {
   return await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
 }
@@ -62,6 +55,7 @@ export default function App() {
   }, []);
 
   const isAuthed = Boolean(authRes?.ok && authRes?.userId);
+  const avatarUrl = authRes?.imageUrl ?? null;
 
   return (
     <div>
@@ -99,7 +93,21 @@ export default function App() {
             />
             <h3 className="text-xl font-bold">ELeet</h3>
           </div>
-          {/* <UserButton/> */}
+
+          {/* Avatar (only when signed in and we have an image url) */}
+          {isAuthed && avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Profile avatar"
+              className="h-8 w-8 rounded-full cursor-pointer"
+              onClick={() => {
+                chrome.runtime.sendMessage({
+                  type: "OPEN_TAB",
+                  url: "https://eleetcoder.com",
+                });
+              }}
+            />
+          ) : null}
         </div>
 
         {/* Signed out UI */}
@@ -135,7 +143,8 @@ export default function App() {
               <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0,0%,0%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
                 <div className="flex flex-col items-center gap-4">
                   <p className="text-center">
-                    Please complete the authentication in the opened tab. Once done, return here.
+                    Please complete the authentication in the opened tab. Once
+                    done, return here.
                   </p>
                   <Button
                     onClick={async () => {

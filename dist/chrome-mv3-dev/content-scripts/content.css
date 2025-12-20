@@ -752,6 +752,9 @@ body {
 .w-px {
   width: 1px;
 }
+.w-8 {
+  width: 32px;
+}
 .min-w-10 {
   min-width: 40px;
 }

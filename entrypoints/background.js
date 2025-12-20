@@ -18,8 +18,9 @@ export default defineBackground(() => {
           const userId = clerk.user?.id ?? null;
           const sessionId = clerk.session?.id ?? null;
           const token = (await clerk.session?.getToken()) ?? null;
+		  const imageUrl = clerk.user?.imageUrl ?? null;
 
-          sendResponse({ ok: true, userId, sessionId, token });
+          sendResponse({ ok: true, userId, sessionId, token, imageUrl });
           return;
         }
 
