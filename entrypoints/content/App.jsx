@@ -46,12 +46,39 @@ export default function App() {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     const run = async () => {
       const res = await getAuth();
-      setAuthRes(res);
-      console.log("Auth response:", res);
+
+      if (!mounted) return;
+
+      // Optional: only update state if something actually changed
+      setAuthRes((prev) => {
+        setAuthButtonPressed(false);
+        if (
+          prev?.userId === res?.userId &&
+          prev?.sessionId === res?.sessionId
+        ) {
+          return prev;
+        }
+        return res;
+      });
+
+      // console.log("Auth response:", res);
     };
+
+    // Run immediately once
     run();
+
+    // Then run every 2 seconds
+    const intervalId = setInterval(run, 2000);
+
+    // Cleanup on unmount
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   const isAuthed = Boolean(authRes?.ok && authRes?.userId);
