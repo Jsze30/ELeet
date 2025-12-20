@@ -733,6 +733,9 @@ body {
 .w-64 {
   width: 256px;
 }
+.w-8 {
+  width: 32px;
+}
 .w-\[100px\] {
   width: 100px;
 }
@@ -751,9 +754,6 @@ body {
 }
 .w-px {
   width: 1px;
-}
-.w-8 {
-  width: 32px;
 }
 .min-w-10 {
   min-width: 40px;
@@ -1110,6 +1110,10 @@ body {
 .tracking-tight {
   letter-spacing: -0.025em;
 }
+.text-\[hsl\(0\2c 0\%\2c 0\%\)\] {
+  --tw-text-opacity: 1;
+  color: hsl(0 0% 0% / var(--tw-text-opacity, 1));
+}
 .text-\[hsl\(0\2c 0\%\2c 95\%\)\] {
   --tw-text-opacity: 1;
   color: hsl(0 0% 95% / var(--tw-text-opacity, 1));
@@ -1165,10 +1169,6 @@ body {
 .text-yellow-500 {
   --tw-text-opacity: 1;
   color: rgb(234 179 8 / var(--tw-text-opacity, 1));
-}
-.text-\[hsl\(0\2c 0\%\2c 0\%\)\] {
-  --tw-text-opacity: 1;
-  color: hsl(0 0% 0% / var(--tw-text-opacity, 1));
 }
 .underline-offset-4 {
   text-underline-offset: 4px;
