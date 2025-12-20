@@ -22,9 +22,12 @@ import {
   ClerkProvider,
   SignedIn,
   SignedOut,
-  SignIn,
+  SignInButton,
+  SignUpButton,
   UserButton,
 } from "@clerk/chrome-extension";
+import "./sessionStyles.css";
+
 // import "@clerk/chrome-extension/dist/style.css";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
@@ -225,16 +228,53 @@ export function Session() {
           <>
             <ClerkProvider
               publishableKey={import.meta.env.VITE_CLERK_PUBLISHABLE_KEY}
-              appearance={{ theme: "simple" }}
+              appearance={{
+                variables: {
+                  fontFamily:
+                    "system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif",
+                },
+                elements: {
+                  userButtonPopoverCard: "clerk-popover",
+                  userButtonPopoverFooter: "clerk-popover-footer",
+                  userButtonPopoverActions: "clerk-popover-actions",
+                  userButtonPopoverActionButton: "clerk-popover-action",
+                  userButtonPopoverActionButtonText:
+                    "clerk-popover-action-text",
+                  userButtonAvatarBox: "clerk-avatar",
+                },
+              }}
             >
-              <div style={container}>
-                <SignedIn>
-                  <UserButton />
-                  <p style={text}>You are signed in 🎉</p>
-                </SignedIn>
+              <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0_0%_95%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
                 <SignedOut>
-                  <SignIn />
+                  <div className="flex items-center gap-4">
+                    <SignInButton mode="modal">
+                      <button
+                        type="button"
+                        className="rounded-[12px] px-5 py-3 text-[15px] font-semibold border border-[hsl(270_85%_60%)] text-[hsl(270_85%_45%)] bg-[hsl(270_85%_95%)] transition hover:bg-[hsl(270_85%_60%)] hover:text-white active:translate-y-[1px]"
+                      >
+                        Log In
+                      </button>
+                    </SignInButton>
+
+                    <SignUpButton mode="modal">
+                      <button
+                        type="button"
+                        className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
+                      >
+                        Sign Up
+                      </button>
+                    </SignUpButton>
+                  </div>
                 </SignedOut>
+
+                <SignedIn>
+                  <div className="flex items-center gap-3">
+                    <UserButton afterSignOutUrl="/" />
+                    <span className="text-[13px] text-[hsl(0_0%_85%)] select-none">
+                      You are signed in 🎉
+                    </span>
+                  </div>
+                </SignedIn>
               </div>
             </ClerkProvider>
           </>
@@ -279,13 +319,23 @@ export function Session() {
   );
 }
 
-const container = {
-  width: 320,
-  padding: 12,
-  fontFamily: "system-ui, sans-serif",
-};
+// const container = {
+//   width: 320,
+//   padding: 12,
+//   fontFamily: "system-ui, sans-serif",
+// };
 
 const text = {
   marginTop: 12,
   fontSize: 14,
+};
+
+// const extensionRootStyle = {
+//   fontFamily: "system-ui, sans-serif",
+// };
+
+const resetStyle = {
+  boxSizing: "border-box",
+  margin: 0,
+  padding: 0,
 };
