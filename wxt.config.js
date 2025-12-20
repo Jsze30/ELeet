@@ -38,7 +38,8 @@ export default defineConfig({
       'https://leetcode.com/problems/*',
       clerkHost + '/*', // for clerk frontend API
       "http://localhost/*",
-      "http://localhost:8080/*"
+      "http://localhost:8080/*",
+      "https://accounts.eleetcoder.com/*"
     ],
     permissions: ['storage', 'cookies'],
     action: {
