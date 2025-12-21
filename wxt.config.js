@@ -1,7 +1,8 @@
 import { defineConfig } from 'wxt';
 import react from '@vitejs/plugin-react';
+import fs from "fs";
 
-// const clerkHost = `${import.meta.env.CLERK_FRONTEND_API}/*`;
+const clerkHost = `${import.meta.env.VITE_CLERK_FRONTEND_API}/*`;
 
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
@@ -20,12 +21,25 @@ export default defineConfig({
   webExt: {
     startUrls: ["https://leetcode.com/problems/two-sum/description/"],  
   },
+  // used the following command to generate a key for wxt:
+  // openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out extension-key.pem
+
+  // this key is used to generate a consistent extension ID across builds
+  // see documentation for more details:
+  // https://developer.chrome.com/docs/extensions/reference/manifest/key
+  // warning: generating a new key will invalidate existing extension installs
   manifest: {
+    key: fs.readFileSync("./extension-key.pem", "utf8"),
     name: 'ELeet',
     description: 'Turn any LeetCode question into a technical interview',
     version: '0.2.0',
+    // list of websites the extension has permission to access
     host_permissions: [
       'https://leetcode.com/problems/*',
+      clerkHost + '/*', // for clerk frontend API
+      "http://localhost/*",
+      "http://localhost:8080/*",
+      "https://accounts.eleetcoder.com/*"
     ],
     permissions: ['storage', 'cookies'],
     action: {

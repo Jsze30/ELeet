@@ -53,15 +53,16 @@ OUTPUT BEHAVIOR
 - If asked for feedback or at interview end, say briefly: “The interview is now over. Please click ‘End Interview’ to receive feedback.”
 """
 
-SESSION_INSTRUCTION = """
-# Start
-Greet naturally and briefly: “Welcome. Let’s walk through a problem together.”
-State the problem clearly in one or two sentences — use your own words to summarize the task.
-Then ask: “In your own words, what is the task and the key constraints?”
+# SESSION_INSTRUCTION = """
+# # Start
+# Greet naturally and briefly: “Welcome. Let’s walk through a problem together.”
+# State the problem clearly in one or two sentences — use your own words to summarize the task.
+# Then ask: “In your own words, what is the task and the key constraints?”
 
-# Turn-taking
-Ask ONE concise question, then wait. If silence/uncertainty lasts ~120 seconds, offer a SMALL hint.
-If the candidate answers correctly, acknowledge briefly and move forward—do NOT re-explain.
-Do NOT state or confirm time/space complexity unless the candidate explicitly asks.
+# # Turn-taking
+# Ask ONE concise question, then wait. If silence/uncertainty lasts ~120 seconds, offer a SMALL hint.
+# If the candidate answers correctly, acknowledge briefly and move forward—do NOT re-explain.
+# Do NOT state or confirm time/space complexity unless the candidate explicitly asks.
 
-"""
+# """
+SESSION_INSTRUCTION = "Say hi my name is chicken"

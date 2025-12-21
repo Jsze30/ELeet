@@ -16,6 +16,7 @@ from livekit.plugins.turn_detector.multilingual import MultilingualModel
 from prompts import AGENT_INSTRUCTION, SESSION_INSTRUCTION
 from feedback import analyze_transcript
 from livekit.agents import function_tool, RunContext
+from livekit.plugins import langchain
 
 load_dotenv()
 
@@ -25,6 +26,10 @@ os.environ['LIVEKIT_URL'] = 'wss://eleet-dev-yrih4rxn.livekit.cloud'
 _active_tasks = set()
 problem_context = {"problem_info": None, "difficulty": None, "code": None}
 code_updated_event = asyncio.Event()
+
+# ═══════════════════════════════════════════
+# INTERVIEW STATE MANAGER
+# ═══════════════════════════════════════════
 
 # Handles incoming text streams from the frontend
 async def async_handle_text_stream(reader, participant_identity):
@@ -44,8 +49,6 @@ async def async_handle_text_stream(reader, participant_identity):
     elif info.topic == "user_code":
         text = await reader.read_all()
         problem_context["code"] = text
-        # Set the event to notify that code has been updated
-        code_updated_event.set()
 
 # Handles incoming text streams from the frontend
 def handle_text_stream(reader, participant_identity):
@@ -62,7 +65,8 @@ server = AgentServer()
 
 @server.rtc_session()
 async def my_agent(ctx: agents.JobContext):
-    print(f"🤖 AGENT: Joining room: {ctx.room.name}")  # Add this
+    
+    print(f"🤖 AGENT: Joining room: {ctx.room.name}")
     # Register text stream handlers
     ctx.room.register_text_stream_handler("problem", handle_text_stream)
     ctx.room.register_text_stream_handler("difficulty", handle_text_stream)
@@ -109,18 +113,19 @@ async def my_agent(ctx: agents.JobContext):
                 return "No code was received from the user."
         except asyncio.TimeoutError:
             return "Timeout: Failed to receive code from the user within the expected time."
-
+    
     vad = silero.VAD.load()
     vad.aggressiveness = 2
     session = AgentSession(
-        stt="deepgram/nova-3:en",      # New string format
-        llm="openai/gpt-4o-mini",         # New string format
+        stt="deepgram/nova-3:en",
+        # llm=langchain.LLMAdapter(graph=create_workflow()),
+        llm="openai/gpt-4o-mini",
         tts=openai.TTS(
             model="gpt-4o-mini-tts",
             voice="alloy",
         ),    
         vad=vad,
-        turn_detection=MultilingualModel(),
+        # turn_detection=silero.VoiceActivityClient(),
     )
     await ctx.connect()
     # Wait for problem description
@@ -132,7 +137,7 @@ async def my_agent(ctx: agents.JobContext):
         problem=problem_context["problem_info"], 
         difficulty=problem_context["difficulty"]
     )
-    agent = Assistant(instructions=agent_instructions, tools=[read_code_tool])
+    agent = Assistant(instructions="", tools=[read_code_tool])
 
     await session.start(
         room=ctx.room,
@@ -144,10 +149,22 @@ async def my_agent(ctx: agents.JobContext):
         ),
     )
 
-    await session.generate_reply(
-        instructions=SESSION_INSTRUCTION,
-    )
+    # await session.generate_reply(
+    #     instructions=SESSION_INSTRUCTION,
+    # )
+    from livekit.agents import UserInputTranscribedEvent
+    async def on_user_input_transcribed(event: UserInputTranscribedEvent):
+        print(f"👤 User said: {event.transcript}")
+        
+        # Wait 2 seconds - if auto-reply is on, agent will speak during this
+        # await asyncio.sleep(2)
+        
+        # Now your manual reply
+        await session.generate_reply(instructions="Say exactly: THIS IS MANUAL")
 
+    @session.on("user_input_transcribed")
+    def on_user_input(event: UserInputTranscribedEvent):
+        asyncio.create_task(on_user_input_transcribed(event))
 
 
 async def save_transcript_to_file(transcript_data, room_name, participant_identity):
