@@ -40,9 +40,9 @@ export function Session() {
     const fullProblem = `Title: ${title}, Description: ${description}`;
 
     // Watch for problem changes (observing when title changes) → reset to welcome
-    let lastTitle = document.querySelector('.text-title-large').textContent;
+    let lastTitle = document.querySelector('.text-title-large')?.textContent;
     const observer = new MutationObserver(() => {
-      const currentTitle = document.querySelector('.text-title-large').textContent;
+      const currentTitle = document.querySelector('.text-title-large')?.textContent;
       if (currentTitle !== lastTitle) {
         lastTitle = currentTitle;
         // Delay to allow page to finish rendering
