@@ -42,8 +42,12 @@ export const Interview = ({
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
       {/* Countdown in MM:SS format */}
-      <div className="absolute top-5 right-5 text-2xl font-bold text-gray-900 dark:text-gray-50">
+      {/* <div className="absolute top-5 right-5 text-2xl font-bold text-gray-900 dark:text-gray-50">
         {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, "0")}
+      </div> */}
+      <div className="absolute top-5 right-5 bg-[#3B3D55] text-white text-2xl font-bold px-3 py-1 rounded-lg shadow-md">
+        {Math.floor(timeRemaining / 60)}:
+        {String(timeRemaining % 60).padStart(2, "0")}
       </div>
 
       {/* Agent connection indicator (color + pulsating while waiting) */}
