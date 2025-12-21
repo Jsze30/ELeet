@@ -19,13 +19,13 @@ import { Welcome } from "@/components/main/welcome_page";
 import { Interview } from "@/components/main/interview_page";
 import { Summary } from "@/components/main/summary_page";
 
-const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
-if (!PUBLISHABLE_KEY) {
-  throw new Error(
-    "Please add the VITE_CLERK_PUBLISHABLE_KEY to the .env.development file"
-  );
-}
+// if (!PUBLISHABLE_KEY) {
+//   throw new Error(
+//     "Please add the VITE_CLERK_PUBLISHABLE_KEY to the .env.development file"
+//   );
+// }
 
 export function Session() {
   // LiveKit room instance
@@ -143,8 +143,8 @@ export function Session() {
   };
 
   useEffect(() => {
-    console.log("pk", import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
-    console.log("syncHost", import.meta.env.VITE_CLERK_SYNC_HOST);
+    // console.log("pk", import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
+    // console.log("syncHost", import.meta.env.VITE_CLERK_SYNC_HOST);
 
     // Connect to room & set up text handlers when starting interview
     if (!room || !participantToken || !sessionStarted) return;

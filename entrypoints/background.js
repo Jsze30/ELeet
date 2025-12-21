@@ -10,6 +10,11 @@ export default defineBackground(() => {
           // IMPORTANT: createClerkClient is async.
           // Creating it inside the handler ensures it initializes and refreshes
           // using the latest synced session (if any).
+
+
+          // Note: createClerkClient automatically syncs auth state from Clerk
+          // It does NOT call the API directly from the extension background
+          // instead, it reads extension storage / cookies to get the current session
           const clerk = await createClerkClient({
             publishableKey: import.meta.env.VITE_CLERK_PUBLISHABLE_KEY,
             syncHost: import.meta.env.VITE_CLERK_SYNC_HOST, // clerk.eleetcoder.com

@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import { Session } from "@/components/main/session.jsx";
 import { Button } from "@/components/ui/button";
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/chrome-extension";
-// import "./sessionStyles.css";
 
 const ELeetLogoUrl = chrome.runtime.getURL("icons/ELeet_logo.png");
 const ELeetLogoUrlBack = chrome.runtime.getURL("icons/ELeet_logo_no_back.png");
