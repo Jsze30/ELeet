@@ -1,9 +1,8 @@
-# Core LiveKit dependencies
+python-dotenv
 livekit
 livekit-agents
-livekit-plugins-openai
-livekit-plugins-deepgram
-livekit-plugins-silero
-livekit-plugins-turn-detector
 livekit-plugins-noise-cancellation
-python-dotenv
+livekit-plugins-silero
+livekit-plugins-openai
+livekit-plugins-turn-detector
+
