@@ -56,7 +56,7 @@ export default function App() {
         return res;
       });
 
-      console.log("Auth response:", res);
+      // console.log("Auth response:", res);
     };
 
     // Run immediately once

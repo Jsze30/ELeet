@@ -50,23 +50,24 @@ export function Session() {
   const description = document.querySelector(".elfjS")?.textContent;
   const fullProblem = `Title: ${title}, Description: ${description}`;
 
-    // Watch for problem changes (observing when title changes) → reset to welcome
-    let lastTitle = document.querySelector('.text-title-large').textContent;
-    const observer = new MutationObserver(() => {
-      const currentTitle = document.querySelector('.text-title-large').textContent;
-      if (currentTitle !== lastTitle) {
-        lastTitle = currentTitle;
-        // Delay to allow page to finish rendering
-        setTimeout(() => {
-          const title = document.querySelector('.text-title-large')?.textContent;
-          const description = document.querySelector('.elfjS')?.textContent;
-          const fullProblem = `Title: ${title}, Description: ${description}`;
-          // Reset flow for new problem
-          goToStage('welcome');
-        }, 500);
-      }
-    });
-    observer.observe(document, { subtree: true, childList: true });
+  // Watch for problem changes (observing when title changes) → reset to welcome
+  let lastTitle = document.querySelector(".text-title-large").textContent;
+  const observer = new MutationObserver(() => {
+    const currentTitle =
+      document.querySelector(".text-title-large").textContent;
+    if (currentTitle !== lastTitle) {
+      lastTitle = currentTitle;
+      // Delay to allow page to finish rendering
+      setTimeout(() => {
+        const title = document.querySelector(".text-title-large")?.textContent;
+        const description = document.querySelector(".elfjS")?.textContent;
+        const fullProblem = `Title: ${title}, Description: ${description}`;
+        // Reset flow for new problem
+        goToStage("welcome");
+      }, 500);
+    }
+  });
+  observer.observe(document, { subtree: true, childList: true });
 
   // const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
 
@@ -211,12 +212,8 @@ export function Session() {
             }
           />
         );
-      case "login/signup":
-        return (
-          <>
-          </>
-        );
       case "interview":
+        if (!room) return <div>Connecting you to a room…</div>;
         return (
           <Interview
             timeLimit={timeLimit}
@@ -238,41 +235,20 @@ export function Session() {
     }
   };
 
-  return (
-    <>
-      {/* Provide room context & audio only during interview */}
-      {room ? (
-        <RoomContext.Provider value={room}>
-          {currentStage === "interview" && (
-            <>
-              <RoomAudioRenderer />
-              <StartAudio />
-            </>
-          )}
-        </RoomContext.Provider>
-      ) : null}
+  {
+    /* Provide room context & audio only during interview */
+  }
+  return room ? (
+    <RoomContext.Provider value={room}>
+      {currentStage === "interview" && (
+        <>
+          <RoomAudioRenderer />
+          <StartAudio />
+        </>
+      )}
       {StageManager()}
-    </>
+    </RoomContext.Provider>
+  ) : (
+    <>{StageManager()}</>
   );
 }
-
-// const container = {
-//   width: 320,
-//   padding: 12,
-//   fontFamily: "system-ui, sans-serif",
-// };
-
-const text = {
-  marginTop: 12,
-  fontSize: 14,
-};
-
-// const extensionRootStyle = {
-//   fontFamily: "system-ui, sans-serif",
-// };
-
-const resetStyle = {
-  boxSizing: "border-box",
-  margin: 0,
-  padding: 0,
-};
