@@ -113,21 +113,25 @@ export const Interview = ({
       {/* <div className="absolute top-5 right-5 text-2xl font-bold text-gray-900 dark:text-gray-50">
         {Math.floor(timeRemaining / 60)}:{String(timeRemaining % 60).padStart(2, "0")}
       </div> */}
-      <div className="absolute top-5 right-5 bg-[#3B3D55] text-white text-2xl font-bold px-3 py-1 rounded-lg shadow-md">
+      <div className="absolute top-4 right-5 bg-[#3B3D55] text-white text-2xl font-bold px-2 py-0.5 rounded-lg shadow-md">
         {Math.floor(timeRemaining / 60)}:
         {String(timeRemaining % 60).padStart(2, "0")}
       </div>
 
       <div className="flex flex-col items-center justify-center space-y-4">
         {/* Agent connection indicator (color + pulsating while waiting) */}
-        <div className={`flex items-center ${agentJoined ? "text-green-500" : "text-yellow-500"}`}>
-          <div className={`w-3 h-3 rounded-full mr-2 ${agentJoined ? "bg-green-500" : "bg-yellow-500 animate-pulse"}`}></div>
-          <span className="font-medium">
-            {agentJoined ? "Agent connected" : "Waiting for agent..."}
-          </span>
-        </div>
+        {!agentJoined && (
+          <div className={`flex items-center ${agentJoined ? "text-green-500" : "text-yellow-500"}`}>
+            <div className={`w-3 h-3 rounded-full mr-2 ${agentJoined ? "bg-green-500" : "bg-yellow-500 animate-pulse"}`}></div>
+            <span className="font-medium">
+              {"Waiting for agent..."}
+            </span>
+          </div>
+        )}
         <AgentAudioVisualizer agentJoined={agentJoined} />
       </div>
+
+
 
       {/* Navigation back (always enabled) */}
       <Button onClick={onGoBack} className="absolute bottom-10 left-10">
