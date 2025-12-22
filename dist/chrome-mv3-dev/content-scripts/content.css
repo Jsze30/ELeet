@@ -599,11 +599,11 @@ body {
 .top-0 {
   top: 0px;
 }
-.top-5 {
-  top: 20px;
-}
 .top-4 {
   top: 16px;
+}
+.top-5 {
+  top: 20px;
 }
 .z-10 {
   z-index: 10;
@@ -1040,6 +1040,10 @@ body {
   padding-left: 32px;
   padding-right: 32px;
 }
+.py-0\.5 {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
 .py-1 {
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1055,10 +1059,6 @@ body {
 .py-3 {
   padding-top: 12px;
   padding-bottom: 12px;
-}
-.py-0\.5 {
-  padding-top: 2px;
-  padding-bottom: 2px;
 }
 .pb-20 {
   padding-bottom: 80px;

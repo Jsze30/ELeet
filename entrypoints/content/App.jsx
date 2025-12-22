@@ -168,7 +168,7 @@ export default function App() {
                     onClick={async () => {
                       const res = await getAuth();
                       setAuthRes(res);
-                      console.log("Auth response after button click:", res);
+                      // console.log("Auth response after button click:", res);
                       setAuthButtonPressed(false);
                     }}
                     className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"

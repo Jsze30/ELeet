@@ -171,6 +171,7 @@ export function Session() {
           const userCode = Array.from(document.querySelectorAll(".view-line"))
             .map((line) => line.textContent)
             .join("\n");
+          console.log("USER CODE: ", userCode);
           // Send user code to agent
           await room.localParticipant.sendText(userCode, {
             topic: "user_code",
@@ -213,7 +214,17 @@ export function Session() {
           />
         );
       case "interview":
-        if (!room) return <div>Connecting you to a room…</div>;
+        if (!room) {
+          return (
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className={`flex items-center ${agentJoined ? "text-green-500" : "text-yellow-500"}`}>
+              <div className={`w-3 h-3 rounded-full mr-2 ${agentJoined ? "bg-green-500" : "bg-yellow-500 animate-pulse"}`}></div>
+                <span className="font-medium">
+                  {"Connecting You to a Room..."}
+                </span>
+            </div>
+          </div>);
+        }
         return (
           <Interview
             timeLimit={timeLimit}
