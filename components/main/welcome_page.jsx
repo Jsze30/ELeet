@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { DiscordLogoIcon } from "@phosphor-icons/react";
 
 export const Welcome = ({
   onStartInterview,
@@ -119,17 +120,17 @@ export const Welcome = ({
         </Select>
 
         {/* Start button triggers parent with configured settings */}
-        <div className="absolute bottom-10 flex space-x-4">
+        <div className="absolute bottom-10 flex space-x-4 items-center justify-center">
           {/* Start button triggers parent with configured settings */}
           <Button onClick={() => onStartInterview(timeLimit, difficulty)}>
             Start Interview
           </Button>
           {/* Discord link button */}
-          <Button variant="secondary" asChild className="bg-purple-500 hover:bg-purple-600 text-secondary-foreground">
-            <a href="https://discord.gg/gEnunRG3uF" target="_blank" rel="noopener noreferrer">
-              Join Our Discord!
-            </a>
-          </Button>
+          {/* <Button variant="secondary" asChild className="bg-purple-500 hover:bg-purple-600 text-secondary-foreground"> */}
+          {/* </Button> */}
+          <a href="https://discord.gg/gEnunRG3uF" target="_blank" rel="noopener noreferrer">
+              <DiscordLogoIcon size={32} weight="duotone" color="#626DEF" />
+          </a>
         </div>
       </div>
     </div>
