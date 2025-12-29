@@ -130,55 +130,29 @@ export default function App() {
 
         {/* Signed out UI */}
         {!isAuthed ? (
-          <>
-            {!authButtonPressed ? (
-              <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0_0%_95%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
-                <div className="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openSignIn();
-                      setAuthButtonPressed(true);
-                    }}
-                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold border border-[hsl(270_85%_60%)] text-[hsl(270_85%_45%)] bg-[hsl(270_85%_95%)] transition hover:bg-[hsl(270_85%_60%)] hover:text-white active:translate-y-[1px]"
-                  >
-                    Log In
-                  </button>
+          <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0_0%_95%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  openSignIn();
+                }}
+                className="text-black/95 border-black hover:bg-black/10 hover:text-black/95 rounded-full"
+              >
+                Log In
+              </Button>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      openSignUp();
-                      setAuthButtonPressed(true);
-                    }}
-                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
-                  >
-                    Sign Up
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="w-[320px] h-[160px] flex items-center justify-center text-[hsl(0,0%,0%)] rounded-[14px] antialiased font-[system-ui,-apple-system,Segoe_UI,Roboto,Helvetica,Arial,sans-serif]">
-                <div className="flex flex-col items-center gap-4">
-                  <p className="text-center">
-                    Please complete the authentication in the opened tab. Once
-                    done, return here.
-                  </p>
-                  <Button
-                    onClick={async () => {
-                      const res = await getAuth();
-                      setAuthRes(res);
-                      // console.log("Auth response after button click:", res);
-                      setAuthButtonPressed(false);
-                    }}
-                    className="rounded-[12px] px-5 py-3 text-[15px] font-semibold bg-[hsl(270_85%_60%)] text-[hsl(0,0%,95%)] transition hover:bg-[hsl(270_85%_55%)] active:translate-y-[1px]"
-                  >
-                    I've Completed Authentication
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
+              <Button
+                variant="default"
+                onClick={() => {
+                  openSignUp();
+                }}
+                className="bg-black text-white/95 hover:bg-black/70 hover:text-white/95 rounded-full"
+              >
+                Sign Up
+              </Button>
+            </div>
+          </div>
         ) : (
           // Signed in UI
           <div className="grid grid-cols-1 gap-4 items-center w-full">
@@ -186,7 +160,6 @@ export default function App() {
           </div>
         )}
       </div>
-      {/* </ClerkProvider> */}
     </div>
   );
 }
