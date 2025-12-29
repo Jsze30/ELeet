@@ -12,7 +12,7 @@ from livekit.agents import (
     RunContext,
     AgentTask
 )
-from livekit.agents.beta.workflows import TaskGroup
+from livekit.agents.beta.workflows import TaskGroup # type: ignore
 
 from livekit.plugins import noise_cancellation, silero, openai
 from livekit.plugins.turn_detector.multilingual import MultilingualModel

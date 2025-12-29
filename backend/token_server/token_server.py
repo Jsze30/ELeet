@@ -4,6 +4,7 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from livekit import api
 from dotenv import load_dotenv
+from flask import request
 
 load_dotenv()  # Load LIVEKIT_API_KEY and LIVEKIT_API_SECRET from .env
 
@@ -14,7 +15,8 @@ CORS(app)
 def get_token():
     # Generate random identity and room name
     participant_name = "user"
-    participant_identity = f"voice_assistant_user_{random.randint(0, 9999)}"
+    clerk_user_id = request.args.get('userId')  
+    participant_identity = clerk_user_id
     room_name = f"voice_assistant_room_{random.randint(0, 9999)}"
 
     # Generate token

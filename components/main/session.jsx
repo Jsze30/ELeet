@@ -19,14 +19,6 @@ import { Welcome } from "@/components/main/welcome_page";
 import { Interview } from "@/components/main/interview_page";
 import { Summary } from "@/components/main/summary_page";
 
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error(
-//     "Please add the VITE_CLERK_PUBLISHABLE_KEY to the .env.development file"
-//   );
-// }
-
 export function Session() {
   // LiveKit room instance
   const [room, setRoom] = useState(null);
@@ -100,8 +92,10 @@ export function Session() {
         ? "http://localhost:8080/getToken" // Local token server
         : "https://parrot-wxt.onrender.com/getToken"; // Production token server
 
-      const res = await fetch(tokenUrl);
-      console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
+      const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
+      const clerkUserId = authInfo?.userId;
+      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
+      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       const data = await res.json();
       setParticipantToken(data.token);
       return data.token;
