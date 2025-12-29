@@ -5,4 +5,5 @@ livekit-plugins-noise-cancellation
 livekit-plugins-silero
 livekit-plugins-openai
 livekit-plugins-turn-detector
+asyncio
 
