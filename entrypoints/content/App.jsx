@@ -35,6 +35,16 @@ export default function App() {
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
   };
+  useEffect(() => {
+    // Run once on component mount to hide the gray bounding box
+    const style = document.createElement('style');
+    style.textContent = `
+      [data-layout-path="/ts0"]::after {
+        display: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
