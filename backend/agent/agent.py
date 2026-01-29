@@ -264,7 +264,7 @@ class DryRunTask(AgentTask[DryRunResult]):
             {code}
             ```
             
-            Ask the candidate to walk through their code with a specific example input (like [2,7,11,15], target=9).
+            Ask the candidate to walk through their code with a specific example input.
             They should explain:
             - What happens at each step of their algorithm
             - The values of variables as they change
