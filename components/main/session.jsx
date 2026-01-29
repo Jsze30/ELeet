@@ -19,14 +19,6 @@ import { Welcome } from "@/components/main/welcome_page";
 import { Interview } from "@/components/main/interview_page";
 import { Summary } from "@/components/main/summary_page";
 
-// const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
-
-// if (!PUBLISHABLE_KEY) {
-//   throw new Error(
-//     "Please add the VITE_CLERK_PUBLISHABLE_KEY to the .env.development file"
-//   );
-// }
-
 export function Session() {
   // LiveKit room instance
   const [room, setRoom] = useState(null);
@@ -69,11 +61,8 @@ export function Session() {
   });
   observer.observe(document, { subtree: true, childList: true });
 
-  // const serverUrl="wss://parrot-8ggzczwu.livekit.cloud"
-
-  const serverUrl = __DEV__
-    ? "wss://eleet-dev-yrih4rxn.livekit.cloud" // Your new dev project URL
-    : "wss://parrot-8ggzczwu.livekit.cloud"; // Production URL
+  const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
+  // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Dev URL
 
   // Stage transition handler
   const goToStage = async (stage, time, difficulty) => {
@@ -96,13 +85,13 @@ export function Session() {
   // Retrieve LiveKit participant token from backend.
   const fetchParticipantToken = async () => {
     try {
-      // const res = await fetch(`https://parrot-wxt.onrender.com/getToken`);
-      const tokenUrl = __DEV__
-        ? "http://localhost:8080/getToken" // Local token server
-        : "https://parrot-wxt.onrender.com/getToken"; // Production token server
+      const tokenUrl = "https://parrot-wxt.onrender.com/getToken"; // Production token server
+      // const tokenUrl = "http://localhost:8080/getToken"; // Dev token server
 
-      const res = await fetch(tokenUrl);
-      console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
+      const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
+      const clerkUserId = authInfo?.userId;
+      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
+      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       const data = await res.json();
       setParticipantToken(data.token);
       return data.token;
