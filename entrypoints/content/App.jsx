@@ -39,8 +39,8 @@ export default function App() {
     // Run once on component mount to hide the gray bounding box
     const style = document.createElement('style');
     style.textContent = `
-      [data-layout-path="/ts0"]::after {
-        display: none !important;
+      [data-layout-path]::after {
+      display: none !important;
       }
     `;
     document.head.appendChild(style);

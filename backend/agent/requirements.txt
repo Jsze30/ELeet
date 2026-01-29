@@ -4,6 +4,7 @@ livekit-agents
 livekit-plugins-noise-cancellation
 livekit-plugins-silero
 livekit-plugins-openai
+livekit-plugins-deepgram
 livekit-plugins-turn-detector
 asyncio
 

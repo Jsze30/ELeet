@@ -5,8 +5,6 @@ from openai import OpenAI
 
 load_dotenv()
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
 RUBRIC = {
     "problem_comprehension": {
         "dimension": "Problem Comprehension & Clarification",
@@ -126,6 +124,7 @@ async def analyze_transcript(transcript_data: dict) -> dict:
         dict with score (out of 4), rubric_scores, feedback, and decision
     """
     
+    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     rubric_prompt = _build_rubric_prompt()
     
     analysis_prompt = f"""You are an expert technical interview evaluator. Analyze the following interview transcript STRICTLY based on what the candidate actually said and did.
