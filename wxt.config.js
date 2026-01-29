@@ -35,7 +35,7 @@ export default defineConfig({
     key: fs.readFileSync("./extension-key.pem", "utf8"),
     name: 'ELeet',
     description: 'Turn any LeetCode question into a technical interview',
-    version: '0.2.0',
+    version: '0.4.0',
     // list of websites the extension has permission to access
     host_permissions: [
       'https://leetcode.com/problems/*',
