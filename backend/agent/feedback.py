@@ -134,9 +134,12 @@ async def analyze_transcript(transcript_data: dict) -> dict:
     2. If a candidate did NOT attempt or discuss something, score them 1 for that dimension
     3. Every score MUST be justified with exact quotes or clear transcript references
     4. Do NOT assume or infer competency - only evaluate what is explicitly demonstrated
-    5. If complexity analysis was not discussed, score complexity_analysis as 1, not higher
-    6. If no testing/debugging was discussed, score testing_debugging as 1
-    7. Be conservative - when in doubt, score lower and cite why
+    5. Be conservative - when in doubt, score lower and cite why
+    6. Make feedback ACTIONABLE and INSIGHTFUL:
+       - Highlight what they did WELL (specific strength with evidence)
+       - If score is 4/4: Highlight what they did well, then mention a minor area for continued growth (do NOT make up weaknesses)
+       - Identify what to IMPROVE (specific growth area with evidence)
+       - Provide a CONCRETE TIP for next time (actionable advice they can practice)
 
     {rubric_prompt}
 
@@ -151,14 +154,14 @@ async def analyze_transcript(transcript_data: dict) -> dict:
     Please respond in the following JSON format:
     {{
         "dimension_scores": {{
-            "problem_comprehension": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote or transcript reference>"}},
-            "algorithmic_approach": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote or transcript reference>"}},
-            "coding_implementation": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote or transcript reference or code snippet>"}},
-            "testing_debugging": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote or transcript reference. If no testing discussed, state 'No testing or debugging discussed in transcript'>"}},
-            "complexity_analysis": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote showing time/space complexity analysis. If not discussed, state 'Candidate did not analyze complexity'>"}},
-            "communication_collaboration": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote or transcript reference showing communication style>"}},
-            "execution_time_management": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<timestamp or phase progression reference>"}},
-            "technical_foundations": {{"score": <1-4>, "feedback": "<explanation with specific evidence from transcript>", "evidence": "<exact quote showing technical concept usage or misconception>"}}
+            "problem_comprehension": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote or transcript reference>"}},
+            "algorithmic_approach": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote or transcript reference>"}},
+            "coding_implementation": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote or transcript reference or code snippet>"}},
+            "testing_debugging": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote or transcript reference. If no testing discussed, state 'No testing or debugging discussed in transcript'>"}},
+            "complexity_analysis": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote showing time/space complexity analysis. If not discussed, state 'Candidate did not analyze complexity'>"}},
+            "communication_collaboration": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote or transcript reference showing communication style>"}},
+            "execution_time_management": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<timestamp or phase progression reference>"}},
+            "technical_foundations": {{"score": <1-4>, "feedback": "<In 2nd person, natural sentences: What you did well and what you could improve on with specific evidence from the transcript.>", "evidence": "<exact quote showing technical concept usage or misconception>"}}
         }},
         "rubric_feedback": "<overall summary of how scores were determined based on explicit transcript evidence>",
         "recommendation": "<Strong Hire|Weak Hire|No-Hire>",
@@ -172,7 +175,7 @@ async def analyze_transcript(transcript_data: dict) -> dict:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are a strict technical interviewer evaluator. You ONLY score based on explicit evidence in the transcript. If something was not discussed or demonstrated, score it 1. Every score must have clear evidence. Do not hallucinate or infer competency. Always respond with valid JSON."
+                    "content": "You are a strict technical interviewer evaluator. You ONLY score based on explicit evidence in the transcript. If something was not discussed or demonstrated, score it 1. Every score must have clear evidence. Do not hallucinate or infer competency. Score based strictly on explicit evidence in the transcript. For feedback: be honest about what they did well, and if they scored 4/4, only mention a minor area for continued growth without fabricating weaknesses. Always respond with valid JSON."
                 },
                 {
                     "role": "user",

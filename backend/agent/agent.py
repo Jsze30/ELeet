@@ -37,6 +37,8 @@ You are interacting with the user via voice, and must apply the following rules 
 - Spell out numbers, phone numbers, or email addresses.
 - Omit `https://` and other formatting if listing a web URL.
 - Avoid acronyms and words with unclear pronunciation, when possible.
+- CRITICAL: NEVER reference, mention, use, or acknowledge the candidate's name in ANY response, EVER. 
+    Not once. Not in any context. Pretend you don't know their name. After they introduce themselves just respond with "Nice to meet you" or similar.
 
 2. Interview guidelines
 - NEVER tell the candidate the solution or expand upon their ideas let them think for themselves
@@ -101,7 +103,7 @@ class IntroductionTask(AgentTask[None]):
 
     async def on_enter(self):
         await self.session.generate_reply(
-            instructions="Welcome the candidate and ask for their name"
+            instructions="Welcome the candidate and ask for their name and brief introduction."
         )
 
     @function_tool()
@@ -116,8 +118,14 @@ class ReadProblemTask(AgentTask[ProblemResult]):
         super().__init__(
             instructions= BASE_PROMPT + f"""
             You are in the READ PROBLEM phase.
-            Briefly describe the problem: {self.problem}. Let them ask clarifying questions.
-            Do not move on until the user confirms understanding.
+            Read the problem name without the problem number
+            and very briefly summarize the problem: {self.problem}. 
+            Don't read out the examples.
+            Let them ask clarifying questions.
+
+            Call the confirm_understanding tool when the user 
+            confirms they understand the problem and are ready to move on.
+            DO NOT ask about their conceptual solution in this phase.
             """
         )   
         print("starting read problem phase")
@@ -539,7 +547,7 @@ async def my_agent(ctx: agents.JobContext):
         stt="deepgram/nova-3:en",
         llm="openai/gpt-4.1-mini",
         tts=deepgram.TTS(
-            model="aura-2-neptune-en",
+            model="aura-2-athena-en",
         ),
         vad=silero.VAD.load(),
         turn_detection=MultilingualModel(),
