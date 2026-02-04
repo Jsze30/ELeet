@@ -168,6 +168,15 @@ export function Session() {
         }
       );
 
+      // Listen for automatic end_interview signal from agent
+      room.registerTextStreamHandler(
+        "end_interview",
+        async (reader, participant) => {
+          await reader.readAll();
+          endInterview();
+        }
+      );
+
       room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
 
       // Enable mic early, then connect

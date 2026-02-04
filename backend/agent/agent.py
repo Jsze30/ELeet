@@ -405,6 +405,13 @@ class ConclusionTask(AgentTask[None]):
         await self.session.generate_reply(
             instructions="Thank the candidate for their time and conclude the interview briefly."
         )
+        await asyncio.sleep(2)
+        # Send end_interview signal to frontend
+        await problem_context["room"].local_participant.send_text(
+            '{"action":"end_interview"}',
+            topic="end_interview"
+        )
+        print("Interview concluded - sent end_interview signal to frontend")
         self.complete(None)
 
 
