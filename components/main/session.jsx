@@ -36,6 +36,8 @@ export function Session() {
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   // Whether remote agent (AI participant) has connected
   const [agentJoined, setAgentJoined] = useState(false);
+  // User subscription plan
+  const [plan, setPlan] = useState(null);
 
   // Grab current problem title + description from host page (LeetCode-like DOM)
   const title = document.querySelector(".text-title-large")?.textContent;
@@ -94,6 +96,7 @@ export function Session() {
       // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       const data = await res.json();
       setParticipantToken(data.token);
+      setPlan(data.plan);
       return data.token;
     } catch (error) {
       console.error("Error fetching token:", error);
@@ -237,6 +240,7 @@ export function Session() {
             onStartOver={() => goToStage("welcome")}
             feedback={feedback}
             isLoading={loadingFeedback}
+            plan={plan}
           />
         );
       default:
