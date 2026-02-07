@@ -797,6 +797,9 @@ body {
 .max-w-\[320px\] {
   max-width: 320px;
 }
+.max-w-xs {
+  max-width: 320px;
+}
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1198,6 +1201,10 @@ body {
 .text-gray-500 {
   --tw-text-opacity: 1;
   color: rgb(107 114 128 / var(--tw-text-opacity, 1));
+}
+.text-gray-600 {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
 }
 .text-gray-700 {
   --tw-text-opacity: 1;

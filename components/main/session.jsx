@@ -38,6 +38,8 @@ export function Session() {
   const [agentJoined, setAgentJoined] = useState(false);
   // User subscription plan
   const [plan, setPlan] = useState(null);
+  // Whether user has hit their monthly interview limit
+  const [limitReached, setLimitReached] = useState(false);
 
   // Grab current problem title + description from host page (LeetCode-like DOM)
   const title = document.querySelector(".text-title-large")?.textContent;
@@ -72,6 +74,7 @@ export function Session() {
     if (stage === "welcome") {
       setSessionStarted(false);
       setAgentJoined(false);
+      setLimitReached(false);
     } else if (stage === "interview") {
       const token = await fetchParticipantToken();
       if (token) {
@@ -80,6 +83,7 @@ export function Session() {
         setTimeLimit(time);
         setDifficulty(difficulty);
         setAgentJoined(false);
+        setLimitReached(false);
       }
     }
   };
@@ -93,10 +97,20 @@ export function Session() {
       const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
       const clerkUserId = authInfo?.userId;
       const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
-      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       const data = await res.json();
+      
+      // Handle limit reached error (429)
+      if (!res.ok) {
+        setPlan(data.plan);
+        setLimitReached(true);
+        setCurrentStage("interview");
+        return null;
+      }
+      
+      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       setParticipantToken(data.token);
       setPlan(data.plan);
+      // console.log("users plan:", data.plan);
       return data.token;
     } catch (error) {
       console.error("Error fetching token:", error);
@@ -215,6 +229,18 @@ export function Session() {
           />
         );
       case "interview":
+        if (limitReached) {
+          return (
+            <Interview
+              timeLimit={timeLimit}
+              onGoBack={() => goToStage("welcome")}
+              onEndInterview={() => endInterview()}
+              agentJoined={agentJoined}
+              limitReached={limitReached}
+              plan={plan}
+            />
+          );
+        }
         if (!room) {
           return (
           <div className="flex flex-col items-center justify-center space-y-4">
@@ -232,6 +258,8 @@ export function Session() {
             onGoBack={() => goToStage("welcome")}
             onEndInterview={() => endInterview()}
             agentJoined={agentJoined}
+            limitReached={limitReached}
+            plan={plan}
           />
         );
       case "summary":

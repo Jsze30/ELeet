@@ -14,6 +14,9 @@ async function openSignIn() {
 
   await chrome.runtime.sendMessage({
     type: "OPEN_TAB",
+    // url: `https://harmless-filly-97.accounts.dev/sign-in?redirect_url=${encodeURIComponent(
+    //   redirectUrl
+    // )}`,
     url: `https://accounts.eleetcoder.com/sign-in?redirect_url=${encodeURIComponent(
       redirectUrl
     )}`,
