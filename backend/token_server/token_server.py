@@ -8,60 +8,115 @@ from dotenv import load_dotenv
 from flask import request
 from datetime import date
 import json
+from supabase import create_client
 
 load_dotenv()  # Load LIVEKIT_API_KEY and LIVEKIT_API_SECRET from .env
 
 app = Flask(__name__)
 CORS(app)
 
-USAGE_FILE = "user_usage.json"
+# USAGE_FILE = "user_usage.json"
 
-def load_usage_data():
-    if os.path.exists(USAGE_FILE):
-        with open(USAGE_FILE, 'r') as f:
-            return json.load(f)
-    return {}
+# def load_usage_data():
+#     if os.path.exists(USAGE_FILE):
+#         with open(USAGE_FILE, 'r') as f:
+#             return json.load(f)
+#     return {}
 
-def save_usage_data(data):
-    with open(USAGE_FILE, 'w') as f:
-        json.dump(data, f)
+# def save_usage_data(data):
+#     with open(USAGE_FILE, 'w') as f:
+#         json.dump(data, f)
 
 def get_month_key():
     return date.today().strftime("%Y-%m")
 
-def check_interview_limit(clerk_user_id, plan):
-    # Determine limit based on plan
-    if plan == "pro":
-        limit = 15
-    elif plan == "free":
-        limit = 3
-    
-    usage_data = load_usage_data()
+# def check_interview_limit(clerk_user_id, plan):
+#     # Determine limit based on plan
+#     if plan == "pro":
+#         limit = 15
+#     elif plan == "free":
+#         limit = 3
+#
+#     print("user plan: ", plan)
+#
+#     usage_data = load_usage_data()
+#     current_month = get_month_key()
+#     user_data = usage_data.get(clerk_user_id, {})
+#     last_month = user_data.get("last_month")
+#     count = user_data.get("count", 0)
+#
+#     # Reset if month changed
+#     if last_month != current_month:
+#         count = 0
+#
+#     if count >= limit:
+#         return False, "Limit reached"
+#
+#     # Increment and save
+#     usage_data[clerk_user_id] = {"count": count + 1, "last_month": current_month}
+#     save_usage_data(usage_data)
+#
+#     return True, f"{count + 1}/{limit}"
+
+def get_supabase_client(clerk_token: str):
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_publishable_key = os.getenv("SUPABASE_PUBLISHABLE_KEY")
+
+    client = create_client(supabase_url, supabase_publishable_key)
+    client.options.headers["Authorization"] = f"Bearer {clerk_token}"
+    return client
+
+# Ensures user profile exists, fetches current monthly activity, increments or resets count based on month, and updates Supabase.
+# returns the new interview count.
+def track_monthly_usage(clerk_user_id: str, clerk_token: str) -> int:
     current_month = get_month_key()
-    user_data = usage_data.get(clerk_user_id, {})
-    last_month = user_data.get("last_month")
-    count = user_data.get("count", 0)
-    
-    # Reset if month changed
-    if last_month != current_month:
-        count = 0
-    
-    if count >= limit:
-        return False, "Limit reached"
-    
-    # Increment and save
-    usage_data[clerk_user_id] = {"count": count + 1, "last_month": current_month}
-    save_usage_data(usage_data)
-    
-    return True, f"{count + 1}/{limit}"
+    supabase = get_supabase_client(clerk_token)
+
+    # Upsert to ensure profile exists (insert if not exists, otherwise do nothing)
+    (supabase.table('Profile')
+        .upsert({
+            'user_id': clerk_user_id,
+            'monthly_activity': {'count': 0, 'last_month': current_month}
+        }, on_conflict='user_id', ignore_duplicates=True)
+        .execute())
+
+    # Fetch the profile to get the current monthly activity
+    response = (supabase.table('Profile')
+        .select('monthly_activity')
+        .eq('user_id', clerk_user_id)
+        .single()
+        .execute())
+    monthly_activity = response.data.get('monthly_activity', {})
+
+    # Check if month changed and update count accordingly
+    last_month = monthly_activity.get('last_month')
+    count = monthly_activity.get('count', 0)
+
+    if last_month == current_month:
+        new_count = count + 1
+    else:
+        new_count = 1
+
+    # Update monthly_activity in Supabase
+    (supabase.table('Profile')
+        .update({'monthly_activity': {'count': new_count, 'last_month': current_month}})
+        .eq('user_id', clerk_user_id)
+        .execute())
+
+    return new_count
 
 @app.route("/getToken", methods=["GET"])
 def get_token():
+    clerk_user_id = request.args.get('userId')
+    clerk_token = request.headers.get('Authorization', '').replace('Bearer ', '')
+
     # Generate random identity and room name
     participant_name = "user"
-    clerk_user_id = request.args.get('userId')  
     participant_identity = clerk_user_id
     room_name = f"voice_assistant_room_{random.randint(0, 9999)}"
+
+    # Track monthly usage in Supabase
+    new_count = track_monthly_usage(clerk_user_id, clerk_token)
 
     # Fetch subscription plan
     plan = None
@@ -79,9 +134,11 @@ def get_token():
         pass
 
     # Check interview limit
-    allowed, status = check_interview_limit(clerk_user_id, plan)
-    if not allowed:
+    print("plan: ", plan)
+    limit = 15 if plan == "pro" else 3
+    if new_count > limit:
         return jsonify({"error": "Monthly interview limit reached"}), 429
+    status = f"{new_count}/{limit}"
 
     # Generate token
     token = api.AccessToken(
@@ -105,7 +162,4 @@ def get_token():
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8080))
-    app.run(host="0.0.0.0", port=port, debug=False)
-
-
-
+    app.run(host="0.0.0.0", port=port, debug=True)

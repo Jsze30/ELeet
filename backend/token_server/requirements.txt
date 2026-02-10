@@ -9,3 +9,6 @@ flask-cors
 # Environment management
 python-dotenv
 
+# clerk integration
+requests
+supabase

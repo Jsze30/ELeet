@@ -65,8 +65,8 @@ export function Session() {
   });
   observer.observe(document, { subtree: true, childList: true });
 
+  // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Development URL
   const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
-  // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Dev URL
 
   // Stage transition handler
   const goToStage = async (stage, time, difficulty) => {
@@ -95,8 +95,18 @@ export function Session() {
       // const tokenUrl = "http://localhost:8080/getToken"; // Dev token server
 
       const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
-      const clerkUserId = authInfo?.userId;
-      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
+      // const clerkUserId = authInfo?.userId;
+      // const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
+
+      const clerkUserId = authInfo?.userId;                                                                                               
+      const clerkToken = authInfo?.token;                                                    
+                                                                                                                                          
+      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`, {                                                                      
+        headers: {                                                                                                                        
+          'Authorization': `Bearer ${clerkToken}`                                                                                         
+        }                                                                                                                                 
+      });                                                                                                                                 
+           
       const data = await res.json();
       
       // Handle limit reached error (429)

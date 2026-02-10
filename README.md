@@ -131,6 +131,7 @@ cd backend/token_server
 python -m venv venv
 source venv/bin/activate         # Windows: venv\Scripts\activate
 pip install -r requirements.txt
+set -a && source .env.local && set +a [optional]
 ```
 
 ```
@@ -144,11 +145,12 @@ cd backend/agent
 python -m venv venv
 source venv/bin/activate         # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-python new_agent.py download-files
+set -a && source .env.local && set +a [optional]
+python agent.py download-files
 ```
 
 ```
-python new_agent.py dev
+python agent.py dev
 ```
 
 ### 3. Frontend / Extension Dev
@@ -156,6 +158,7 @@ python new_agent.py dev
 From project root (Terminal 3):
 
 ```
+set -a && source .env.development && set +a [optional]
 npm install
 npm run dev
 ```
