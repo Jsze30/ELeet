@@ -66,7 +66,9 @@ export function Session() {
   observer.observe(document, { subtree: true, childList: true });
 
   // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Development URL
-  const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
+  // const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
+  const serverUrl = __DEV__ ? "wss://eleet-dev-yrih4rxn.livekit.cloud" 
+                  : "wss://parrot-8ggzczwu.livekit.cloud";
 
   // Stage transition handler
   const goToStage = async (stage, time, difficulty) => {
@@ -91,8 +93,10 @@ export function Session() {
   // Retrieve LiveKit participant token from backend.
   const fetchParticipantToken = async () => {
     try {
-      const tokenUrl = "https://parrot-wxt.onrender.com/getToken"; // Production token server
+      // const tokenUrl = "https://parrot-wxt.onrender.com/getToken"; // Production token server
       // const tokenUrl = "http://localhost:8080/getToken"; // Dev token server
+      const tokenUrl = __DEV__ ? "http://localhost:8080/getToken" 
+                : "https://parrot-wxt.onrender.com/getToken";
 
       const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
       // const clerkUserId = authInfo?.userId;
@@ -112,6 +116,7 @@ export function Session() {
       // Handle limit reached error (429)
       if (!res.ok) {
         setPlan(data.plan);
+        console.log("users plan:", data.plan);
         setLimitReached(true);
         setCurrentStage("interview");
         return null;
@@ -120,7 +125,7 @@ export function Session() {
       // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       setParticipantToken(data.token);
       setPlan(data.plan);
-      // console.log("users plan:", data.plan);
+      console.log("users plan:", data.plan);
       return data.token;
     } catch (error) {
       console.error("Error fetching token:", error);

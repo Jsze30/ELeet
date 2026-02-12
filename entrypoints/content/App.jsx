@@ -10,29 +10,33 @@ async function getAuth() {
 }
 
 async function openSignIn() {
-  const redirectUrl = window.location.href;
+  const redirectUrl = __DEV__ ? "http://localhost:3001" : "https://eleetcoder.com";
+  
+  const signInUrl = __DEV__ 
+    ? `https://harmless-filly-97.accounts.dev/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`
+    : `https://accounts.eleetcoder.com/sign-in?redirect_url=${encodeURIComponent(redirectUrl)}`;
 
+  console.log("Opening sign-in URL:", signInUrl);
   await chrome.runtime.sendMessage({
     type: "OPEN_TAB",
-    // clerk hosted development url:
-    // url: `https://harmless-filly-97.accounts.dev/sign-in?redirect_url=${encodeURIComponent(
-      // redirectUrl
-    // )}`,
-    // production url:
-    url: `https://accounts.eleetcoder.com/sign-in?redirect_url=${encodeURIComponent(
-      redirectUrl
-    )}`,
+    url: signInUrl,
   });
 }
 
 async function openSignUp() {
+  const signUpUrl = __DEV__
+    ? "https://harmless-filly-97.accounts.dev/sign-up"
+    : "https://accounts.eleetcoder.com/sign-up";
+
+  console.log("Opening sign-up URL:", signUpUrl);
   await chrome.runtime.sendMessage({
     type: "OPEN_TAB",
-    url: "https://accounts.eleetcoder.com/sign-up",
+    url: signUpUrl,
   });
 }
 
 export default function App() {
+  console.log(__DEV__ ? "development" : "production");
   const [isVisible, setIsVisible] = useState(true);
   const [authButtonPressed, setAuthButtonPressed] = useState(false);
   const [authRes, setAuthRes] = useState(null);
