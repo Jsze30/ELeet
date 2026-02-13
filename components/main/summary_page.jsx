@@ -13,7 +13,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-export const Summary = ({ onStartOver, feedback, isLoading }) => {
+export const Summary = ({ onStartOver, feedback, isLoading, plan }) => {
   const [showFullFeedback, setShowFullFeedback] = useState(false);
 
   // Parse feedback JSON
@@ -133,46 +133,58 @@ export const Summary = ({ onStartOver, feedback, isLoading }) => {
               </button>
             </div>
 
-            {/* Content - Scrollable */}
-            <div className="p-6 space-y-6 overflow-y-auto flex-grow scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-              {/* Overall Score */}
-              <div className="text-center pb-2 border-b">
-                <h3 className="font-semibold text-sm text-muted-foreground mb-2">Overall Score</h3>
-                <span className="text-5xl font-bold text-primary">
-                  {scores.overall_score}/4
-                </span>
+            {/* Content - Scrollable or Lock Screen */}
+            {plan === "free" ? (
+              // Lock screen for free users
+              <div className="flex-grow flex flex-col items-center justify-center p-6 space-y-4">
+                <div className="text-5xl">🔒</div>
+                <h3 className="text-2xl font-bold">Premium Feature</h3>
+                <p className="text-center text-gray-600 max-w-xs">
+                  Upgrade your plan to view detailed interview feedback and analysis.
+                </p>
               </div>
-
-              {/* Dimension Scores with Feedback */}
-              {scores.dimension_scores &&
-                Object.entries(scores.dimension_scores).map(([key, value]) => (
-                  <div key={key} className="border-b pb-4 last:border-b-0">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-base">
-                        {getDimensionName(key)}
-                      </h3>
-                      <span className="text-lg font-bold text-primary">
-                        {value.score}/4
-                      </span>
-                    </div>
-                    {value.feedback && (
-                      <p className="text-sm text-gray-700 leading-relaxed">
-                        {value.feedback}
-                      </p>
-                    )}
-                  </div>
-                ))}
-
-              {/* Overall Feedback */}
-              {scores.overall_feedback && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-base mb-2">Summary</h3>
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    {scores.overall_feedback}
-                  </p>
+            ) : (
+              // Full feedback for paid users
+              <div className="p-6 space-y-6 overflow-y-auto flex-grow scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {/* Overall Score */}
+                <div className="text-center pb-2 border-b">
+                  <h3 className="font-semibold text-sm text-muted-foreground mb-2">Overall Score</h3>
+                  <span className="text-5xl font-bold text-primary">
+                    {scores.overall_score}/4
+                  </span>
                 </div>
-              )}
-            </div>
+
+                {/* Dimension Scores with Feedback */}
+                {scores.dimension_scores &&
+                  Object.entries(scores.dimension_scores).map(([key, value]) => (
+                    <div key={key} className="border-b pb-4 last:border-b-0">
+                      <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-base">
+                          {getDimensionName(key)}
+                        </h3>
+                        <span className="text-lg font-bold text-primary">
+                          {value.score}/4
+                        </span>
+                      </div>
+                      {value.feedback && (
+                        <p className="text-sm text-gray-700 leading-relaxed">
+                          {value.feedback}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+
+                {/* Overall Feedback */}
+                {scores.overall_feedback && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <h3 className="font-semibold text-base mb-2">Summary</h3>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {scores.overall_feedback}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

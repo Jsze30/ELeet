@@ -36,6 +36,10 @@ export function Session() {
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   // Whether remote agent (AI participant) has connected
   const [agentJoined, setAgentJoined] = useState(false);
+  // User subscription plan
+  const [plan, setPlan] = useState(null);
+  // Whether user has hit their monthly interview limit
+  const [limitReached, setLimitReached] = useState(false);
 
   // Grab current problem title + description from host page (LeetCode-like DOM)
   const title = document.querySelector(".text-title-large")?.textContent;
@@ -61,8 +65,10 @@ export function Session() {
   });
   observer.observe(document, { subtree: true, childList: true });
 
-  const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
-  // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Dev URL
+  // const serverUrl="wss://eleet-dev-yrih4rxn.livekit.cloud" // Development URL
+  // const serverUrl="wss://parrot-8ggzczwu.livekit.cloud" // Production URL
+  const serverUrl = __DEV__ ? "wss://eleet-dev-yrih4rxn.livekit.cloud" 
+                  : "wss://parrot-8ggzczwu.livekit.cloud";
 
   // Stage transition handler
   const goToStage = async (stage, time, difficulty) => {
@@ -70,6 +76,7 @@ export function Session() {
     if (stage === "welcome") {
       setSessionStarted(false);
       setAgentJoined(false);
+      setLimitReached(false);
     } else if (stage === "interview") {
       const token = await fetchParticipantToken();
       if (token) {
@@ -78,6 +85,7 @@ export function Session() {
         setTimeLimit(time);
         setDifficulty(difficulty);
         setAgentJoined(false);
+        setLimitReached(false);
       }
     }
   };
@@ -85,15 +93,39 @@ export function Session() {
   // Retrieve LiveKit participant token from backend.
   const fetchParticipantToken = async () => {
     try {
-      const tokenUrl = "https://parrot-wxt.onrender.com/getToken"; // Production token server
+      // const tokenUrl = "https://parrot-wxt.onrender.com/getToken"; // Production token server
       // const tokenUrl = "http://localhost:8080/getToken"; // Dev token server
+      const tokenUrl = __DEV__ ? "http://localhost:8080/getToken" 
+                : "https://parrot-wxt.onrender.com/getToken";
 
       const authInfo = await chrome.runtime.sendMessage({ type: "CLERK_GET_AUTH" });
-      const clerkUserId = authInfo?.userId;
-      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
-      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
+      // const clerkUserId = authInfo?.userId;
+      // const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`);
+
+      const clerkUserId = authInfo?.userId;                                                                                               
+      const clerkToken = authInfo?.token;                                                    
+                                                                                                                                          
+      const res = await fetch(`${tokenUrl}?userId=${clerkUserId}`, {                                                                      
+        headers: {                                                                                                                        
+          'Authorization': `Bearer ${clerkToken}`                                                                                         
+        }                                                                                                                                 
+      });                                                                                                                                 
+           
       const data = await res.json();
+      
+      // Handle limit reached error (429)
+      if (!res.ok) {
+        setPlan(data.plan);
+        console.log("users plan:", data.plan);
+        setLimitReached(true);
+        setCurrentStage("interview");
+        return null;
+      }
+      
+      // console.log("🎟️ FRONTEND: Fetching token from:", tokenUrl);
       setParticipantToken(data.token);
+      setPlan(data.plan);
+      console.log("users plan:", data.plan);
       return data.token;
     } catch (error) {
       console.error("Error fetching token:", error);
@@ -168,6 +200,15 @@ export function Session() {
         }
       );
 
+      // Listen for automatic end_interview signal from agent
+      room.registerTextStreamHandler(
+        "end_interview",
+        async (reader, participant) => {
+          await reader.readAll();
+          endInterview();
+        }
+      );
+
       room.on(RoomEvent.ParticipantConnected, onParticipantConnected);
 
       // Enable mic early, then connect
@@ -203,6 +244,18 @@ export function Session() {
           />
         );
       case "interview":
+        if (limitReached) {
+          return (
+            <Interview
+              timeLimit={timeLimit}
+              onGoBack={() => goToStage("welcome")}
+              onEndInterview={() => endInterview()}
+              agentJoined={agentJoined}
+              limitReached={limitReached}
+              plan={plan}
+            />
+          );
+        }
         if (!room) {
           return (
           <div className="flex flex-col items-center justify-center space-y-4">
@@ -220,6 +273,8 @@ export function Session() {
             onGoBack={() => goToStage("welcome")}
             onEndInterview={() => endInterview()}
             agentJoined={agentJoined}
+            limitReached={limitReached}
+            plan={plan}
           />
         );
       case "summary":
@@ -228,6 +283,7 @@ export function Session() {
             onStartOver={() => goToStage("welcome")}
             feedback={feedback}
             isLoading={loadingFeedback}
+            plan={plan}
           />
         );
       default:

@@ -2,9 +2,8 @@ import { defineConfig } from 'wxt';
 import react from '@vitejs/plugin-react';
 import fs from "fs";
 import { config } from 'dotenv';
-config({ path: '.env.development' });
-
-config({ path: '.env.development' });
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env.development';
+config({ path: envFile });
 const clerkHost = `${process.env.VITE_CLERK_FRONTEND_API}/*`;
 
 export default defineConfig({

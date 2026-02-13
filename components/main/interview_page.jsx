@@ -11,7 +11,7 @@
  * @param {number} timeLimit - Total time in seconds (default 60).
  * @param {boolean} agentJoined - Whether remote agent has connected.
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { LiveAudioVisualizer } from 'react-audio-visualize';
 import { useTracks } from "@livekit/components-react";
@@ -86,8 +86,52 @@ export const Interview = ({
   onEndInterview,
   onGoBack,
   timeLimit = 60,
-  agentJoined
+  agentJoined,
+  limitReached = false,
+  plan = null
 }) => {
+  // Show lock screen if limit reached
+  if (limitReached) {
+    const isFree = plan === "free";
+    
+    return (
+      <div className="flex flex-col items-center justify-center space-y-4 h-full w-full">
+        <div className="text-center space-y-2 max-w-[18rem]">
+          <div className="text-4xl">🔒</div>
+          <h2 className="text-lg font-bold">Monthly Limit Reached</h2>
+          <p className="text-xs text-gray-600 dark:text-gray-300 px-2 break-words whitespace-normal">
+            {isFree 
+              ? "You've used all 3 free interviews this month. Your limit resets on the 1st of next month."
+              : "You've used all 15 Pro interviews this month. Your limit resets on the 1st of next month."}
+          </p>
+        </div>
+        
+        <div className="flex gap-2 flex-wrap justify-center">
+          {isFree && (
+            <Button 
+              className="bg-black text-white hover:bg-black/70 rounded-full text-xs py-1 px-3 h-auto"
+              onClick={() => {
+                chrome.runtime.sendMessage({
+                  type: "OPEN_TAB",
+                  url: "https://eleetcoder.com/pricing",
+                });
+              }}
+            >
+              Upgrade to Pro
+            </Button>
+          )}
+          <Button 
+            variant="outline"
+            onClick={onGoBack}
+            className="rounded-full text-xs py-1 px-3 h-auto"
+          >
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   // Remaining seconds in countdown
   const [timeRemaining, setTimeRemaining] = useState(timeLimit)
   // Controls whether countdown is actively decrementing
