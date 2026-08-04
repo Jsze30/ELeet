@@ -31,10 +31,10 @@ export default defineConfig({
   // https://developer.chrome.com/docs/extensions/reference/manifest/key
   // warning: generating a new key will invalidate existing extension installs
   manifest: {
-    key: fs.readFileSync("./extension-key.pem", "utf8"),
+    // key: fs.readFileSync("./extension-key.pem", "utf8"),
     name: 'ELeet',
     description: 'Turn any LeetCode question into a technical interview',
-    version: '0.4.0',
+    version: '0.4.1',
     // list of websites the extension has permission to access
     host_permissions: [
       'https://leetcode.com/problems/*',
