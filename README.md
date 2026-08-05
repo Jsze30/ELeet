@@ -29,6 +29,8 @@ An interview practice assistant that enables mock interviews on LeetCode problem
 
 ## High-Level Architecture
 
+![Architecture diagram](public/icons/architecture.png)
+
 Frontend (this repo):
 
 - Components:
